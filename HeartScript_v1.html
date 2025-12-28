@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HeartScript | Romantic Gifts & Letters</title>
+
+<style>
+/* ===== GENERAL STYLES ===== */
+*{margin:0;padding:0;box-sizing:border-box;font-family:Segoe UI,Arial}
+body{background:#fff0f6;color:#333}
+header{background:linear-gradient(135deg,#ff416c,#ff4b2b);color:#fff;padding:40px 20px;text-align:center;position:relative;}
+header h1{font-size:40px}
+header p{margin-top:10px;font-size:16px}
+.container{width:92%;max-width:1200px;margin:auto;padding:40px 0}
+.section-title{text-align:center;font-size:30px;color:#d81b60;margin-bottom:30px}
+.products{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:25px}
+.card{background:#fff;border-radius:14px;box-shadow:0 10px 22px rgba(0,0,0,.12);overflow:hidden;transition:.3s;position:relative}
+.card:hover{transform:translateY(-8px);box-shadow:0 12px 28px rgba(0,0,0,.18);}
+.card img{width:100%;height:180px;object-fit:cover}
+.card .content{padding:15px}
+.card h3{font-size:18px;margin-bottom:5px}
+.price{color:#e91e63;font-weight:bold;margin-bottom:8px}
+.card p{font-size:13px;margin-bottom:12px}
+
+/* ===== BUTTONS ===== */
+button, .add-cart-btn, .cart-counter {
+  font-family:'Segoe UI',Arial;
+  border:none;
+  border-radius:10px;
+  cursor:pointer;
+  transition:all 0.3s ease;
+  font-weight:600;
+  text-align:center;
+}
+
+/* PRODUCT CARD BUTTONS */
+.card button {
+  background:linear-gradient(135deg,#ff416c,#ff4b2b);
+  color:#fff;
+  padding:12px 15px;
+  font-size:15px;
+  width:100%;
+  border-radius:8px;
+  margin-bottom:5px;
+  box-shadow:0 4px 12px rgba(255,65,108,0.3);
+}
+.card button:hover {
+  background:#d81b60;
+  transform:translateY(-2px);
+  box-shadow:0 6px 15px rgba(216,27,96,0.4);
+}
+
+/* ADD TO CART CIRCLE BUTTON */
+.add-cart-btn {
+  position:absolute;
+  top:10px;
+  right:10px;
+  background:#ff4b2b;
+  color:#fff;
+  padding:8px 10px;
+  font-size:16px;
+  border-radius:50%;
+  box-shadow:0 4px 12px rgba(255,75,43,0.4);
+}
+.add-cart-btn:hover {
+  background:#d81b60;
+  transform:scale(1.15);
+  box-shadow:0 6px 15px rgba(216,27,96,0.5);
+}
+
+/* CART COUNTER (HEADER) */
+.cart-counter {
+  position:absolute;
+  top:25px;
+  right:20px;
+  background:#fff;
+  color:#ff416c;
+  padding:8px 14px;
+  font-weight:bold;
+  font-size:16px;
+  border-radius:50%;
+  box-shadow:0 4px 12px rgba(0,0,0,0.2);
+}
+.cart-counter:hover {transform:scale(1.1);box-shadow:0 6px 15px rgba(0,0,0,0.25);}
+
+/* ORDER PAGE BUTTONS */
+.order-box button.mainOrder {
+  background:linear-gradient(135deg,#ff416c,#ff4b2b);
+  color:#fff;
+  padding:12px 20px;
+  font-size:16px;
+  width:100%;
+  margin-top:10px;
+  box-shadow:0 6px 15px rgba(255,65,108,0.4);
+}
+.order-box button.mainOrder:hover {
+  background:linear-gradient(135deg,#d81b60,#ff1f4b);
+  transform:translateY(-2px);
+  box-shadow:0 8px 20px rgba(255,65,108,0.5);
+}
+
+.order-box button.altBtn, .backBtn {
+  background:#333;
+  color:#fff;
+  padding:12px 20px;
+  font-size:15px;
+  width:100%;
+  margin-top:10px;
+}
+.order-box button.altBtn:hover, .backBtn:hover {
+  background:#000;
+  transform:translateY(-2px);
+}
+
+/* CART PAGE BUTTONS (+/- and Remove) */
+.cart-table button {
+  padding:6px 10px;
+  font-size:14px;
+  border-radius:6px;
+  margin:0 2px;
+  background:#ff416c;
+  color:#fff;
+  box-shadow:0 3px 10px rgba(255,65,108,0.3);
+}
+.cart-table button:hover {
+  background:#d81b60;
+  transform:translateY(-1px);
+  box-shadow:0 4px 12px rgba(216,27,96,0.4);
+}
+
+/* GENERAL STYLES */
+.page{display:none}
+.active{display:block}
+.order-box{max-width:520px;margin:auto;background:#fff;padding:25px;border-radius:14px;box-shadow:0 10px 22px rgba(0,0,0,.12)}
+.order-box input{width:100%;padding:11px;margin:10px 0;border-radius:7px;border:1px solid #ccc}
+footer{background:#ff416c;color:#fff;text-align:center;padding:15px;margin-top:40px}
+.cart-table{width:100%;border-collapse:collapse;margin-bottom:20px;}
+.cart-table th, .cart-table td{border:1px solid #ccc;padding:10px;text-align:center;}
+.cart-table th{background:#ff416c;color:#fff;}
+
+/* PRODUCT DETAIL PAGE */
+#productDetail img{border-radius:10px;box-shadow:0 6px 15px rgba(0,0,0,0.2);}
+#productDetail p{line-height:1.6;text-align:justify;margin-bottom:20px;}
+</style>
+</head>
+<body>
+
+<header>
+<h1>HeartScript ❤️</h1>
+<p>Romantic Handwritten Letters • Customized Gifts • Love Hampers</p>
+<div class="cart-counter" onclick="showCart()">🛒 <span id="cartCount">0</span></div>
+</header>
+
+<!-- HOME PAGE -->
+<div id="home" class="container page active">
+<h2 class="section-title">Our Romantic Collection 💕</h2>
+<div class="products" id="productList"></div>
+</div>
+
+<!-- PRODUCT DETAIL PAGE -->
+<div id="productDetail" class="container page">
+  <h2 class="section-title" id="detailTitle"></h2>
+  <div style="display:flex;gap:20px;flex-wrap:wrap;justify-content:center;margin-bottom:20px">
+    <img id="detailImgMain" src="" style="width:400px;height:300px;object-fit:cover;">
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <img id="detailImg1" src="" style="width:150px;height:100px;object-fit:cover;cursor:pointer">
+      <img id="detailImg2" src="" style="width:150px;height:100px;object-fit:cover;cursor:pointer">
+      <img id="detailImg3" src="" style="width:150px;height:100px;object-fit:cover;cursor:pointer">
+    </div>
+  </div>
+  <div class="price" id="detailPrice" style="font-size:20px;margin-bottom:15px"></div>
+  <p id="detailDesc"></p>
+  <button class="mainOrder" onclick="orderNowFromDetail()">Order Now</button>
+  <div class="add-cart-btn" style="position:static;margin-top:10px" onclick="addToCartFromDetail()">🛒 Add to Cart</div>
+  <button class="backBtn" onclick="goHome()">← Back to Shop</button>
+</div>
+
+<!-- CART PAGE -->
+<div id="cart" class="container page">
+<h2 class="section-title">Your Cart 🛒</h2>
+<table class="cart-table" id="cartTable">
+<thead>
+<tr>
+<th>Product</th>
+<th>Price</th>
+<th>Quantity</th>
+<th>Subtotal</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody></tbody>
+</table>
+<p style="text-align:right;font-weight:bold;font-size:16px">Total: ₹<span id="cartTotal">0</span></p>
+<button class="mainOrder" onclick="checkoutCart()">Checkout</button>
+<button class="backBtn" onclick="goHome()">← Back to Shop</button>
+</div>
+
+<!-- ORDER PAGE -->
+<div id="order" class="container page">
+<h2 class="section-title">Place Your Order 💌</h2>
+<div class="order-box">
+<input id="name" placeholder="Your Name">
+<input id="email" placeholder="Email">
+<input id="phone" placeholder="Phone Number">
+<p><b>Products:</b></p>
+<ul id="pName"></ul>
+<p><b>Total Price:</b> ₹<span id="pPrice"></span></p>
+<button class="mainOrder" onclick="placeOrder()">✅ Place Order</button>
+<button class="altBtn" onclick="sendWhatsApp()">📱 WhatsApp</button>
+<button class="altBtn" onclick="sendEmail()">📧 Email</button>
+<button class="altBtn" onclick="sendInstagram()">📸 Instagram</button>
+<button class="backBtn" onclick="goHome()">← Back</button>
+</div>
+</div>
+
+<!-- THANK YOU PAGE -->
+<div id="thanks" class="container page" style="text-align:center">
+<h2 class="section-title">Thank You 🎉</h2>
+<p>Your order has been placed successfully.</p>
+<p id="orderMsg" style="margin-top:10px;font-size:18px"></p>
+<button class="mainOrder" onclick="goHome()">Back to Home</button>
+<br><br>
+<button class="mainOrder" onclick="downloadInvoice()">📄 Download Invoice</button>
+</div>
+
+<footer>
+© 2025 HeartScript | Crafted with ❤️
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+// ==== PRODUCTS ====
+const products=[
+"Handwritten Love Letter","Open When Letters Box","100 Reasons Why I Love You",
+"Memory Scrapbook","Couple Photo Frame","Love Jar Notes","Romantic Hamper",
+"Proposal Letter","Anniversary Letter","Birthday Love Letter",
+"Long Distance Letters","Apology Letter","First Meet Memory Box",
+"Polaroid Photo Set","Customized Keychain","Couple Mug Set",
+"Mini Teddy Hamper","Candle Love Box","Timeline Love Story Book",
+"Future Letters Pack","Valentine Special Hamper","Chocolate Love Box",
+"Heart Explosion Box","Song Lyrics Letter","Couple Bracelet",
+"Open When Missing You","Good Morning Letters","Good Night Letters",
+"Love Quotes Frame","Promise Letters Set"
+];
+
+// PRODUCT DETAILS DATA (all 30 products)
+const productDetails = {};
+products.forEach((p,i)=>{
+  productDetails[p]={
+    price:199,
+    images:[
+      `https://picsum.photos/seed/pd${i}a/400/300`,
+      `https://picsum.photos/seed/pd${i}b/400/300`,
+      `https://picsum.photos/seed/pd${i}c/400/300`
+    ],
+    desc:`${p} is a romantic product designed to convey your deepest feelings. Crafted with love and care, it is perfect for celebrating special occasions, expressing affection, or creating lasting memories with your loved ones. Each item is thoughtfully made to offer a unique experience and becomes a cherished keepsake.`
+  }
+});
+
+// ==== CART ====
+let cart = [];
+let selectedProduct="", selectedPrice=0, lastOrderID="";
+
+const list=document.getElementById("productList");
+products.forEach((p,i)=>{
+  list.innerHTML+=`
+  <div class="card">
+    <img src="https://picsum.photos/seed/hs${i}/400/300">
+    <div class="content">
+      <h3>${p}</h3>
+      <div class="price">₹199</div>
+      <p>Beautifully handcrafted with love.</p>
+      <button onclick="showProductDetail('${p}')">View Details</button>
+      <div class="add-cart-btn" onclick="addToCart('${p}',199)">🛒</div>
+    </div>
+  </div>`;
+});
+
+// ==== FUNCTIONS ====
+function show(id){document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));document.getElementById(id).classList.add("active");}
+function goHome(){show("home");}
+
+function addToCart(name,price){let item=cart.find(i=>i.name===name);if(item){item.qty+=1;}else{cart.push({name,price,qty:1});}updateCartCount();}
+function updateCartCount(){document.getElementById("cartCount").innerText=cart.reduce((acc,i)=>acc+i.qty,0);}
+function showCart(){const tbody=document.querySelector("#cartTable tbody");tbody.innerHTML="";let total=0;cart.forEach((item,i)=>{let subtotal=item.price*item.qty;total+=subtotal;tbody.innerHTML+=`<tr><td>${item.name}</td><td>₹${item.price}</td><td><button onclick="updateQty(${i},-1)">-</button> ${item.qty} <button onclick="updateQty(${i},1)">+</button></td><td>₹${subtotal}</td><td><button onclick="removeFromCart(${i})">Remove</button></td></tr>`});document.getElementById("cartTotal").innerText=total;show("cart");}
+function updateQty(index,change){cart[index].qty+=change;if(cart[index].qty<=0) removeFromCart(index);showCart();}
+function removeFromCart(index){cart.splice(index,1);updateCartCount();showCart();}
+function checkoutCart(){if(cart.length==0){alert("Cart is empty");return;}let names=cart.map(i=>`${i.name} x${i.qty}`);let total=cart.reduce((acc,i)=>acc+i.price*i.qty,0);document.getElementById("pName").innerHTML=names.map(n=>`<li>${n}</li>`).join("");document.getElementById("pPrice").innerText=total;show("order");}
+function placeOrder(){const name=document.getElementById("name").value.trim(),email=document.getElementById("email").value.trim(),phone=document.getElementById("phone").value.trim();if(!name||!email||!phone){alert("Please fill all details");return;}const orderID="HS"+Math.floor(100000+Math.random()*900000);lastOrderID=orderID;fetch("https://script.google.com/macros/s/AKfycbwZhIKUbqKgSMrnnel7olF6o9EenI7tAkXysp2zE54TE8-aAnlhSD1EdhlpvJgEZdTO/exec",{method:"POST",mode:"no-cors",headers:{"Content-Type":"application/json"},body:JSON.stringify({orderID,name,email,phone,product:cart.length>0?cart.map(i=>`${i.name} x${i.qty}`).join(", "):selectedProduct,price:cart.length>0?cart.reduce((acc,i)=>acc+i.price*i.qty,0):selectedPrice,method:"Direct Order"})});document.getElementById("orderMsg").innerHTML="Your Order ID: <b>"+orderID+"</b>";cart=[];updateCartCount();show("thanks");}
+function sendWhatsApp(){const msg=encodeURIComponent("I want to order: "+(cart.length>0?cart.map(i=>`${i.name} x${i.qty}`).join(", "):selectedProduct));window.open("https://wa.me/916394174932?text="+msg,"_blank");}
+function sendEmail(){const subject=encodeURIComponent("HeartScript Order"),body=encodeURIComponent("I want to order: "+(cart.length>0?cart.map(i=>`${i.name} x${i.qty}`).join(", "):selectedProduct));window.location.href="mailto:rudraprataptripathi2020@gmail.com?subject="+subject+"&body="+body;}
+function sendInstagram(){window.open("https://instagram.com","_blank");}
+
+// ==== PRODUCT DETAIL PAGE FUNCTIONS ====
+function showProductDetail(name){
+  const data=productDetails[name]; if(!data) return alert("Product details not available yet.");
+  document.getElementById("detailTitle").innerText=name;
+  document.getElementById("detailPrice").innerText=`₹${data.price}`;
+  document.getElementById("detailDesc").innerText=data.desc;
+  document.getElementById("detailImgMain").src=data.images[0];
+  document.getElementById("detailImg1").src=data.images[0];
+  document.getElementById("detailImg2").src=data.images[1];
+  document.getElementById("detailImg3").src=data.images[2];
+  document.getElementById("detailImg1").onclick=()=>{document.getElementById("detailImgMain").src=data.images[0];};
+  document.getElementById("detailImg2").onclick=()=>{document.getElementById("detailImgMain").src=data.images[1];};
+  document.getElementById("detailImg3").onclick=()=>{document.getElementById("detailImgMain").src=data.images[2];};
+  selectedProduct=name; selectedPrice=data.price;
+  show("productDetail");
+}
+
+function orderNowFromDetail(){document.getElementById("pName").innerHTML=`<li>${selectedProduct}</li>`;document.getElementById("pPrice").innerText=selectedPrice;show("order");}
+function addToCartFromDetail(){addToCart(selectedProduct,selectedPrice);alert("Added to Cart ✅");}
+
+// ==== DOWNLOAD INVOICE ====
+function downloadInvoice(){
+  if(!lastOrderID){alert("No order to generate invoice."); return;}
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({unit:"pt", format:"a4"});
+  const name=document.getElementById("name").value.trim(),email=document.getElementById("email").value.trim(),phone=document.getElementById("phone").value.trim();
+  const dateStr = new Date().toLocaleString();
+  doc.setFillColor(255,240,246); doc.rect(0,0,595,842,"F");
+  doc.setFont("helvetica","bold"); doc.setFontSize(28); doc.setTextColor(255,20,147);
+  doc.text("❤️ HeartScript ❤️", 297.5, 40, {align:"center"});
+  doc.setFontSize(14); doc.setTextColor(150);
+  doc.text("Romantic Handwritten Letters • Personalized Gifts • Love Hampers", 297.5, 65, {align:"center"});
+  doc.setDrawColor(255,105,180); doc.setLineWidth(1.5); doc.line(40, 75, 555, 75);
+  doc.setFont("helvetica","normal"); doc.setFontSize(12); doc.setTextColor(0);
+  doc.text(`Invoice ID: ${lastOrderID}`, 40, 100);
+  doc.text(`Date: ${dateStr}`, 40, 115);
+  doc.text(`Payment Method: Direct Order`, 40, 130);
+  doc.text(`Customer Name: ${name}`, 40, 150);
+  doc.text(`Email: ${email}`, 40, 165);
+  doc.text(`Phone: ${phone}`, 40, 180);
+  doc.setFont("helvetica","bold"); doc.text("📦 Product Details:", 40, 205);
+  doc.setFont("helvetica","normal");
+  const productsList = cart.length>0? cart : [{name: selectedProduct, price: selectedPrice, qty:1}];
+  let y = 225; let total = 0;
+  productsList.forEach(p=>{doc.text(`Product: ${p.name}`, 50, y);doc.text(`Price: ₹${p.price}`, 50, y+15);doc.text(`Quantity: ${p.qty}`, 50, y+30);doc.text(`Subtotal: ₹${p.price*p.qty}`, 50, y+45);total+=p.price*p.qty;y+=60;});
+  doc.text(`Total: ₹${total}`, 50, y);
+  doc.setFont("helvetica","bold"); doc.setFontSize(12); doc.text("💌 About HeartScript:", 40, y+30);
+  doc.setFont("helvetica","normal"); doc.setTextColor(80);
+  doc.text("HeartScript creates handcrafted love letters & personalized gifts for your special moments.", 50, y+50);
+  doc.text("Our mission is to spread love & joy through thoughtful customization.", 50, y+65);
+  doc.text("We offer a variety of products including letters, hampers, frames, and more.", 50, y+80);
+  doc.setFont("helvetica","bold"); doc.setTextColor(255,20,147);
+  doc.text("💖 Team Members:", 40, y+100); doc.setFont("helvetica","normal"); doc.setTextColor(100);
+  const team=["Rudra Pratap Tripathi","Priyanshu Singh","Palak Rai","Ravi Prajapati"];
+  team.forEach((member,i)=>{doc.text(`❤️ ${member}`,50,y+120+i*15);});
+  doc.setFontSize(10); doc.setTextColor(150);
+  doc.text("© 2025 HeartScript | Crafted with ❤️", 297.5, 820, {align:"center"});
+  doc.save(`HeartScript_Invoice_${lastOrderID}.pdf`);
+}
+</script>
+</body>
+</html>

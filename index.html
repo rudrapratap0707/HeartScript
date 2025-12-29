@@ -84,6 +84,24 @@ button, .add-cart-btn, .cart-counter {
 }
 .cart-counter:hover {transform:scale(1.1);box-shadow:0 6px 15px rgba(0,0,0,0.25);}
 
+/* CHECKOUT BUTTON FIX */
+.checkoutBtn {
+  background: linear-gradient(135deg,#ff416c,#ff4b2b);
+  color:#fff;
+  padding:12px 25px;
+  font-size:16px;
+  border-radius:10px;
+  width:100%;
+  box-shadow:0 6px 15px rgba(255,65,108,0.4);
+  font-weight:700;
+  margin-top:10px;
+}
+.checkoutBtn:hover {
+  background: linear-gradient(135deg,#d81b60,#ff1f4b);
+  transform: translateY(-2px);
+  box-shadow:0 8px 20px rgba(255,65,108,0.5);
+}
+
 /* ORDER PAGE BUTTONS */
 .order-box button.mainOrder {
   background:linear-gradient(135deg,#ff416c,#ff4b2b);
@@ -192,7 +210,7 @@ footer{background:#ff416c;color:#fff;text-align:center;padding:15px;margin-top:4
 <tbody></tbody>
 </table>
 <p style="text-align:right;font-weight:bold;font-size:16px">Total: ₹<span id="cartTotal">0</span></p>
-<button class="mainOrder" onclick="checkoutCart()">Checkout</button>
+<button class="checkoutBtn" onclick="checkoutCart()">Checkout</button>
 <button class="backBtn" onclick="goHome()">← Back to Shop</button>
 </div>
 
@@ -244,7 +262,7 @@ const products=[
 "Love Quotes Frame","Promise Letters Set"
 ];
 
-// PRODUCT DETAILS DATA (all 30 products)
+// PRODUCT DETAILS DATA
 const productDetails = {};
 products.forEach((p,i)=>{
   productDetails[p]={
@@ -260,7 +278,7 @@ products.forEach((p,i)=>{
 
 // ==== CART ====
 let cart = [];
-let selectedProduct="", selectedPrice=0, lastOrderID="";
+let selectedProduct="", selectedPrice=0, lastOrderID="", lastOrderSnapshot=[];
 
 const list=document.getElementById("productList");
 products.forEach((p,i)=>{
@@ -281,20 +299,82 @@ products.forEach((p,i)=>{
 function show(id){document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));document.getElementById(id).classList.add("active");}
 function goHome(){show("home");}
 
-function addToCart(name,price){let item=cart.find(i=>i.name===name);if(item){item.qty+=1;}else{cart.push({name,price,qty:1});}updateCartCount();}
+function addToCart(name,price){
+  let item=cart.find(i=>i.name===name);
+  if(item){item.qty+=1;}else{cart.push({name,price,qty:1});}
+  updateCartCount();
+}
 function updateCartCount(){document.getElementById("cartCount").innerText=cart.reduce((acc,i)=>acc+i.qty,0);}
-function showCart(){const tbody=document.querySelector("#cartTable tbody");tbody.innerHTML="";let total=0;cart.forEach((item,i)=>{let subtotal=item.price*item.qty;total+=subtotal;tbody.innerHTML+=`<tr><td>${item.name}</td><td>₹${item.price}</td><td><button onclick="updateQty(${i},-1)">-</button> ${item.qty} <button onclick="updateQty(${i},1)">+</button></td><td>₹${subtotal}</td><td><button onclick="removeFromCart(${i})">Remove</button></td></tr>`});document.getElementById("cartTotal").innerText=total;show("cart");}
+function showCart(){
+  const tbody=document.querySelector("#cartTable tbody");
+  tbody.innerHTML="";
+  let total=0;
+  cart.forEach((item,i)=>{
+    let subtotal=item.price*item.qty;
+    total+=subtotal;
+    tbody.innerHTML+=`<tr>
+    <td>${item.name}</td>
+    <td>₹${item.price}</td>
+    <td><button onclick="updateQty(${i},-1)">-</button> ${item.qty} <button onclick="updateQty(${i},1)">+</button></td>
+    <td>₹${subtotal}</td>
+    <td><button onclick="removeFromCart(${i})">Remove</button></td>
+    </tr>`;
+  });
+  document.getElementById("cartTotal").innerText=total;
+  show("cart");
+}
 function updateQty(index,change){cart[index].qty+=change;if(cart[index].qty<=0) removeFromCart(index);showCart();}
 function removeFromCart(index){cart.splice(index,1);updateCartCount();showCart();}
-function checkoutCart(){if(cart.length==0){alert("Cart is empty");return;}let names=cart.map(i=>`${i.name} x${i.qty}`);let total=cart.reduce((acc,i)=>acc+i.price*i.qty,0);document.getElementById("pName").innerHTML=names.map(n=>`<li>${n}</li>`).join("");document.getElementById("pPrice").innerText=total;show("order");}
-function placeOrder(){const name=document.getElementById("name").value.trim(),email=document.getElementById("email").value.trim(),phone=document.getElementById("phone").value.trim();if(!name||!email||!phone){alert("Please fill all details");return;}const orderID="HS"+Math.floor(100000+Math.random()*900000);lastOrderID=orderID;fetch("https://script.google.com/macros/s/AKfycbwZhIKUbqKgSMrnnel7olF6o9EenI7tAkXysp2zE54TE8-aAnlhSD1EdhlpvJgEZdTO/exec",{method:"POST",mode:"no-cors",headers:{"Content-Type":"application/json"},body:JSON.stringify({orderID,name,email,phone,product:cart.length>0?cart.map(i=>`${i.name} x${i.qty}`).join(", "):selectedProduct,price:cart.length>0?cart.reduce((acc,i)=>acc+i.price*i.qty,0):selectedPrice,method:"Direct Order"})});document.getElementById("orderMsg").innerHTML="Your Order ID: <b>"+orderID+"</b>";cart=[];updateCartCount();show("thanks");}
-function sendWhatsApp(){const msg=encodeURIComponent("I want to order: "+(cart.length>0?cart.map(i=>`${i.name} x${i.qty}`).join(", "):selectedProduct));window.open("https://wa.me/916394174932?text="+msg,"_blank");}
-function sendEmail(){const subject=encodeURIComponent("HeartScript Order"),body=encodeURIComponent("I want to order: "+(cart.length>0?cart.map(i=>`${i.name} x${i.qty}`).join(", "):selectedProduct));window.location.href="mailto:rudraprataptripathi2020@gmail.com?subject="+subject+"&body="+body;}
+
+// ==== CHECKOUT ====
+function checkoutCart(){
+  if(cart.length==0){alert("Cart is empty"); return;}
+  lastOrderSnapshot = cart.map(i=>({...i})); // snapshot of cart
+  let names=cart.map(i=>`${i.name} x${i.qty}`);
+  let total=cart.reduce((acc,i)=>acc+i.price*i.qty,0);
+  document.getElementById("pName").innerHTML=names.map(n=>`<li>${n}</li>`).join("");
+  document.getElementById("pPrice").innerText=total;
+  show("order");
+}
+
+// ==== PLACE ORDER ====
+function placeOrder(){
+  const name=document.getElementById("name").value.trim(),
+        email=document.getElementById("email").value.trim(),
+        phone=document.getElementById("phone").value.trim();
+  if(!name||!email||!phone){alert("Please fill all details"); return;}
+  const orderID="HS"+Math.floor(100000+Math.random()*900000);
+  lastOrderID=orderID;
+
+  // if orderNowFromDetail used, snapshot has one product
+  if(lastOrderSnapshot.length===0){
+    lastOrderSnapshot = [{name:selectedProduct,price:selectedPrice,qty:1}];
+  }
+
+  fetch("https://script.google.com/macros/s/AKfycbwZhIKUbqKgSMrnnel7olF6o9EenI7tAkXysp2zE54TE8-aAnlhSD1EdhlpvJgEZdTO/exec",{
+    method:"POST",mode:"no-cors",headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({
+      orderID,name,email,phone,
+      product:lastOrderSnapshot.map(i=>`${i.name} x${i.qty}`).join(", "),
+      price:lastOrderSnapshot.reduce((acc,i)=>acc+i.price*i.qty,0),
+      method:"Direct Order"
+    })
+  });
+
+  document.getElementById("orderMsg").innerHTML="Your Order ID: <b>"+orderID+"</b>";
+  cart=[]; updateCartCount();
+  show("thanks");
+}
+
+// ==== SOCIAL ====
+function sendWhatsApp(){const msg=encodeURIComponent("I want to order: "+lastOrderSnapshot.map(i=>`${i.name} x${i.qty}`).join(", "));window.open("https://wa.me/916394174932?text="+msg,"_blank");}
+function sendEmail(){const subject=encodeURIComponent("HeartScript Order"),body=encodeURIComponent("I want to order: "+lastOrderSnapshot.map(i=>`${i.name} x${i.qty}`).join(", "));window.location.href="mailto:rudraprataptripathi2020@gmail.com?subject="+subject+"&body="+body;}
 function sendInstagram(){window.open("https://instagram.com","_blank");}
 
-// ==== PRODUCT DETAIL PAGE FUNCTIONS ====
+// ==== PRODUCT DETAIL PAGE ====
 function showProductDetail(name){
-  const data=productDetails[name]; if(!data) return alert("Product details not available yet.");
+  const data=productDetails[name]; 
+  if(!data) return alert("Product details not available yet.");
   document.getElementById("detailTitle").innerText=name;
   document.getElementById("detailPrice").innerText=`₹${data.price}`;
   document.getElementById("detailDesc").innerText=data.desc;
@@ -309,7 +389,13 @@ function showProductDetail(name){
   show("productDetail");
 }
 
-function orderNowFromDetail(){document.getElementById("pName").innerHTML=`<li>${selectedProduct}</li>`;document.getElementById("pPrice").innerText=selectedPrice;show("order");}
+function orderNowFromDetail(){
+  lastOrderSnapshot = [{name:selectedProduct, price:selectedPrice, qty:1}];
+  document.getElementById("pName").innerHTML=`<li>${selectedProduct}</li>`;
+  document.getElementById("pPrice").innerText=selectedPrice;
+  show("order");
+}
+
 function addToCartFromDetail(){addToCart(selectedProduct,selectedPrice);alert("Added to Cart ✅");}
 
 // ==== DOWNLOAD INVOICE ====
@@ -317,14 +403,18 @@ function downloadInvoice(){
   if(!lastOrderID){alert("No order to generate invoice."); return;}
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({unit:"pt", format:"a4"});
-  const name=document.getElementById("name").value.trim(),email=document.getElementById("email").value.trim(),phone=document.getElementById("phone").value.trim();
+  const name=document.getElementById("name").value.trim(),
+        email=document.getElementById("email").value.trim(),
+        phone=document.getElementById("phone").value.trim();
   const dateStr = new Date().toLocaleString();
+
   doc.setFillColor(255,240,246); doc.rect(0,0,595,842,"F");
   doc.setFont("helvetica","bold"); doc.setFontSize(28); doc.setTextColor(255,20,147);
-  doc.text("❤️ HeartScript ❤️", 297.5, 40, {align:"center"});
+  doc.text("HeartScript", 297.5, 40, {align:"center"});
   doc.setFontSize(14); doc.setTextColor(150);
   doc.text("Romantic Handwritten Letters • Personalized Gifts • Love Hampers", 297.5, 65, {align:"center"});
   doc.setDrawColor(255,105,180); doc.setLineWidth(1.5); doc.line(40, 75, 555, 75);
+
   doc.setFont("helvetica","normal"); doc.setFontSize(12); doc.setTextColor(0);
   doc.text(`Invoice ID: ${lastOrderID}`, 40, 100);
   doc.text(`Date: ${dateStr}`, 40, 115);
@@ -332,21 +422,28 @@ function downloadInvoice(){
   doc.text(`Customer Name: ${name}`, 40, 150);
   doc.text(`Email: ${email}`, 40, 165);
   doc.text(`Phone: ${phone}`, 40, 180);
-  doc.setFont("helvetica","bold"); doc.text("📦 Product Details:", 40, 205);
+
+  doc.setFont("helvetica","bold"); doc.text("Product Details:", 40, 205);
   doc.setFont("helvetica","normal");
-  const productsList = cart.length>0? cart : [{name: selectedProduct, price: selectedPrice, qty:1}];
-  let y = 225; let total = 0;
-  productsList.forEach(p=>{doc.text(`Product: ${p.name}`, 50, y);doc.text(`Price: ₹${p.price}`, 50, y+15);doc.text(`Quantity: ${p.qty}`, 50, y+30);doc.text(`Subtotal: ₹${p.price*p.qty}`, 50, y+45);total+=p.price*p.qty;y+=60;});
+  let y = 225;
+  let total = 0;
+  lastOrderSnapshot.forEach(p=>{
+    doc.text(`Product: ${p.name}`, 50, y);
+    doc.text(`Price: ₹${p.price}`, 50, y+15);
+    doc.text(`Quantity: ${p.qty}`, 50, y+30);
+    doc.text(`Subtotal: ₹${p.price*p.qty}`, 50, y+45);
+    total += p.price*p.qty; y+=60;
+  });
   doc.text(`Total: ₹${total}`, 50, y);
-  doc.setFont("helvetica","bold"); doc.setFontSize(12); doc.text("💌 About HeartScript:", 40, y+30);
+
+  doc.setFont("helvetica","bold"); doc.setFontSize(12); doc.text("About HeartScript:", 40, y+30);
   doc.setFont("helvetica","normal"); doc.setTextColor(80);
-  doc.text("HeartScript creates handcrafted love letters & personalized gifts for your special moments.", 50, y+50);
-  doc.text("Our mission is to spread love & joy through thoughtful customization.", 50, y+65);
-  doc.text("We offer a variety of products including letters, hampers, frames, and more.", 50, y+80);
-  doc.setFont("helvetica","bold"); doc.setTextColor(255,20,147);
-  doc.text("💖 Team Members:", 40, y+100); doc.setFont("helvetica","normal"); doc.setTextColor(100);
-  const team=["Rudra Pratap Tripathi","Priyanshu Singh","Palak Rai","Ravi Prajapati"];
-  team.forEach((member,i)=>{doc.text(`❤️ ${member}`,50,y+120+i*15);});
+
+  const aboutText = `HeartScript is your ultimate destination for expressing love in the most thoughtful and personalized way. We specialize in creating handcrafted love letters, customized gifts, romantic hampers, and keepsakes that capture emotions and preserve memories. Our products are designed with care, passion, and attention to detail to provide a truly unforgettable experience. Each item is meticulously crafted to ensure that your feelings are conveyed beautifully and meaningfully. From handwritten love letters to anniversary hampers, our collection caters to every special occasion. We focus on quality, creativity, and the essence of love, ensuring that every gift tells a story. Whether you are celebrating milestones, long-distance relationships, or simply want to surprise your loved one, HeartScript delivers a magical experience. Our mission is to spread joy and affection through personalized gifting, making every moment memorable.`;
+
+  const splitText = doc.splitTextToSize(aboutText, 500);
+  doc.text(splitText, 50, y+50);
+
   doc.setFontSize(10); doc.setTextColor(150);
   doc.text("© 2025 HeartScript | Crafted with ❤️", 297.5, 820, {align:"center"});
   doc.save(`HeartScript_Invoice_${lastOrderID}.pdf`);

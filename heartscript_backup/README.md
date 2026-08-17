@@ -77,7 +77,7 @@ HeartScript was built as a sanctuary for people who cherish the old-school charm
 ## 🏗️ Project Structure
 
 ```text
-CODESOFT-HEARTSCRIPT/
+HEARTSCRIPT/
 │
 └── heartscript_backup/
     ├── app.py

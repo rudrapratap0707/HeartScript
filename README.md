@@ -227,7 +227,7 @@ Firebase powers user and order synchronization, Firebase Authentication, and Fir
 | **Project** | HeartScript |
 | **Type** | Full-Stack E-Commerce Web Application |
 | **Live Demo** | [heartscript025.pythonanywhere.com](https://heartscript025.pythonanywhere.com/) |
-| **Repository** | [CODESOFT-HEARTSCRIPT](https://github.com/rudrapratap0707/CODESOFT-HEARTSCRIPT) |
+| **Repository** | [HEARTSCRIPT](https://github.com/rudrapratap0707/HeartScript) |
 | **Developer** | Rudra Pratap Tripathi |
 | **Technology** | Python, Flask, SQLAlchemy, Firebase, HTML, CSS, JavaScript |
 

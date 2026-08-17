@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Account | HeartScript Artistry</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Great+Vibes&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary: #ff416c;
+            --secondary: #ff4b2b;
+            --dark-red: #7b1113;
+            --soft-pink: #fff5f6;
+            --whatsapp-green: #25d366;
+            --glass: rgba(255, 255, 255, 0.9);
+        }
+
+        body {
+            background: linear-gradient(135deg, #fff5f6 0%, #ffffff 50%, #fff0f1 100%);
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            color: #333;
+        }
+
+        /* Navbar Enhancement */
+        .navbar {
+            background: var(--glass) !important;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 65, 108, 0.1);
+        }
+
+        .navbar-brand {
+            font-family: 'Great Vibes', cursive;
+            font-size: 2.5rem;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: bold;
+        }
+
+        /* Profile Sidebar Card */
+        .profile-card {
+            background: white;
+            border-radius: 30px;
+            box-shadow: 0 20px 40px rgba(255, 65, 108, 0.08);
+            border: 1px solid rgba(255, 65, 108, 0.05);
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        .profile-image-container {
+            position: relative;
+            width: 130px;
+            height: 130px;
+            margin: 0 auto 20px;
+        }
+
+        .user-avatar-img {
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 5px solid white;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .upload-icon {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: 3px solid white;
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            transition: 0.3s;
+        }
+
+        .upload-icon:hover { transform: scale(1.1); }
+
+        /* Navigation Pills */
+        .nav-pills .nav-link {
+            color: #555;
+            font-weight: 500;
+            border-radius: 15px;
+            margin-bottom: 10px;
+            padding: 14px 22px;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+
+        .nav-pills .nav-link.active {
+            background: linear-gradient(135deg, var(--primary), var(--secondary)) !important;
+            box-shadow: 0 8px 20px rgba(255, 65, 108, 0.3);
+            border-color: transparent;
+        }
+
+        .nav-link:hover:not(.active) {
+            background: var(--soft-pink);
+            color: var(--primary);
+            padding-left: 30px;
+        }
+
+        /* Content Area */
+        .content-header {
+            font-family: 'Playfair Display', serif;
+            color: var(--dark-red);
+            font-weight: 700;
+            font-size: 1.8rem;
+            margin-bottom: 30px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .content-header::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: var(--primary);
+        }
+
+        /* Order Card - Premium Look */
+        .order-card {
+            background: white;
+            border-radius: 25px;
+            border: 1px solid #f0f0f0;
+            padding: 28px;
+            margin-bottom: 30px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .order-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(255, 65, 108, 0.12);
+        }
+
+        /* Dynamic Progress Bar */
+        .track-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            margin: 45px 0 25px;
+        }
+
+        .track-line {
+            position: absolute;
+            top: 18px;
+            left: 40px;
+            right: 40px;
+            height: 4px;
+            background: #f0f0f0;
+            z-index: 1;
+        }
+
+        .track-line-fill {
+            height: 100%;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .track-step {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            width: 80px;
+        }
+
+        .step-icon {
+            width: 40px;
+            height: 40px;
+            background: white;
+            color: #ccc;
+            border: 2px solid #f0f0f0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            font-size: 16px;
+            transition: 0.4s;
+        }
+
+        .track-step.active .step-icon {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            box-shadow: 0 0 15px rgba(255, 65, 108, 0.4);
+        }
+
+        .step-text {
+            font-size: 10px;
+            font-weight: 700;
+            color: #999;
+            text-transform: uppercase;
+        }
+
+        .track-step.active .step-text { color: var(--primary); }
+
+        /* Status Badges */
+        .status-badge {
+            font-size: 0.7rem;
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .status-pending { background: #fff3cd; color: #856404; }
+        .status-confirmed { background: #d1e7dd; color: #0f5132; }
+        .status-processing { background: #e2d9ff; color: #4b22b0; }
+        .status-delivered { background: #cff4fc; color: #055160; }
+
+        /* Invoice Button Logic */
+        .btn-invoice {
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .btn-invoice:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Help Card (WhatsApp) */
+        .help-card {
+            background: linear-gradient(135deg, #25d366, #128c7e);
+            color: white;
+            border-radius: 25px;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(37, 211, 102, 0.3);
+        }
+
+        .help-card i.fa-whatsapp {
+            opacity: 0.15;
+            position: absolute;
+            font-size: 7rem;
+            right: -15px;
+            bottom: -15px;
+        }
+
+        .help-card a {
+            background: white;
+            color: #128c7e;
+            padding: 10px 25px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 700;
+            display: inline-block;
+            margin-top: 15px;
+            transition: 0.3s;
+        }
+
+        .help-card a:hover { transform: scale(1.05); }
+
+        /* Floating Button */
+        .floating-home-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 15px 25px;
+            border-radius: 50px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 10px 30px rgba(255, 65, 108, 0.4);
+            z-index: 1000;
+            font-weight: 600;
+        }
+
+        /* Mobile Adjustments */
+        @media (max-width: 768px) {
+            .navbar-brand { font-size: 1.8rem; }
+            .track-container { margin: 35px 0 15px; }
+            .track-line { left: 30px; right: 30px; }
+            .step-text { font-size: 8px; }
+            .track-step { width: 60px; }
+            .order-card { padding: 20px; }
+            .floating-home-btn span { display: none; }
+            .floating-home-btn { padding: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg sticky-top mb-4">
+    <div class="container">
+        <a class="navbar-brand" href="/">HeartScript</a>
+        <div class="ms-auto d-flex gap-2">
+            <a href="/shop" class="btn btn-light btn-sm rounded-pill px-3"><i class="fas fa-shopping-bag me-1"></i> Shop</a>
+            <a href="/logout" class="btn btn-outline-danger btn-sm rounded-pill px-3">Logout</a>
+        </div>
+    </div>
+</nav>
+
+<div class="container pb-5">
+    <div class="row g-4">
+        <div class="col-lg-4">
+            <div class="profile-card p-4 mb-4 text-center">
+                <form action="{{ url_for('profile') }}" method="POST" enctype="multipart/form-data">
+                    <div class="profile-image-container">
+                        <img src="{{ user.profile_pic or 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png' }}" id="profilePreview" class="user-avatar-img" alt="Profile">
+                        <div class="upload-btn-wrapper">
+                            <label for="profile_pic" class="upload-icon">
+                                <i class="fas fa-camera"></i>
+                            </label>
+                            <input type="file" name="profile_pic" id="profile_pic" class="d-none" accept="image/*" onchange="previewImage(this)">
+                        </div>
+                    </div>
+                    <h4 class="fw-bold mb-0">{{ user.username }}</h4>
+                    <p class="text-muted small mb-3">{{ user.email }}</p>
+                    
+                    <div id="photoUpdatePrompt" style="display: none;" class="mb-3">
+                        <button type="submit" class="btn btn-primary btn-sm rounded-pill w-100">Update Profile Picture</button>
+                    </div>
+
+                    <div class="nav flex-column nav-pills text-start" id="v-pills-tab">
+                        <button type="button" class="nav-link active" id="orders-tab" data-bs-toggle="pill" data-bs-target="#orders">
+                            <i class="fas fa-box-heart me-2"></i> My Orders
+                        </button>
+                        <button type="button" class="nav-link" id="settings-tab" data-bs-toggle="pill" data-bs-target="#settings">
+                            <i class="fas fa-user-edit me-2"></i> Edit Account
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="help-card">
+                <i class="fab fa-whatsapp"></i>
+                <h5 class="fw-bold mb-1">Artist Support</h5>
+                <p class="small mb-0">Direct WhatsApp for Quick Updates</p>
+                <a href="https://wa.me/917607059859?text=Hi%20HeartScript,%20I%20need%20help%20with%20my%20order." target="_blank">
+                    <i class="fab fa-whatsapp me-2"></i>Chat Now
+                </a>
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            <div class="tab-content">
+                <div class="tab-pane fade show active" id="orders">
+                    <div class="profile-card p-4">
+                        <h3 class="content-header">Your Order Journey</h3>
+                        
+                        {% if orders %}
+                            {% for order in orders %}
+                            <div class="order-card">
+                                <div class="row align-items-center">
+                                    <div class="col-md-7">
+                                        <span class="text-muted fw-bold" style="font-size: 0.7rem; letter-spacing: 1px;">ID: #HS-{{ order.id }}</span>
+                                        <h5 class="fw-bold mt-1 mb-1">{{ order.items }}</h5>
+                                        <p class="text-muted small"><i class="far fa-calendar-alt me-1"></i> {{ order.date_ordered.strftime('%d %b, %Y') }}</p>
+                                    </div>
+                                    <div class="col-md-5 text-md-end">
+                                        {% set s = order.status|lower %}
+                                        <span class="status-badge status-{{ s|replace(' ', '-') }}">{{ order.status }}</span>
+                                        <h4 class="text-primary fw-bold mt-2 mb-0">₹{{ order.total }}</h4>
+                                    </div>
+                                </div>
+
+                                <div class="track-container">
+                                    <div class="track-line">
+                                        <div class="track-line-fill" 
+                                             style="width: {% if s == 'pending' %}0%{% elif s == 'confirmed' %}33%{% elif s == 'processing' %}66%{% elif s == 'delivered' %}100%{% endif %};">
+                                        </div>
+                                    </div>
+                                    <div class="track-step active">
+                                        <div class="step-icon"><i class="fas fa-shopping-cart"></i></div>
+                                        <div class="step-text">Pending</div>
+                                    </div>
+                                    <div class="track-step {% if s in ['confirmed', 'processing', 'delivered'] %}active{% endif %}">
+                                        <div class="step-icon"><i class="fas fa-check-circle"></i></div>
+                                        <div class="step-text">Confirmed</div>
+                                    </div>
+                                    <div class="track-step {% if s in ['processing', 'delivered'] %}active{% endif %}">
+                                        <div class="step-icon"><i class="fas fa-palette"></i></div>
+                                        <div class="step-text">Crafting</div>
+                                    </div>
+                                    <div class="track-step {% if s == 'delivered' %}active{% endif %}">
+                                        <div class="step-icon"><i class="fas fa-gift"></i></div>
+                                        <div class="step-text">DELIVERED</div>
+                                    </div>
+                                </div>
+
+                                <div class="mt-4 pt-3 border-top d-flex justify-content-between align-items-center">
+                                    {% if s == 'pending' %}
+                                        <button onclick="alert('Alert: Order is not confirmed yet, please complete the payment through WhatsApp.')" class="btn btn-sm btn-outline-secondary rounded-pill px-4">
+                                            <i class="fas fa-lock me-1"></i> Invoice
+                                        </button>
+                                    {% else %}
+                                        <a href="{{ url_for('download_invoice', order_id=order.id) }}" class="btn btn-sm btn-invoice rounded-pill px-4">
+                                            <i class="fas fa-file-invoice me-1"></i> Download Invoice
+                                        </a>
+                                    {% endif %}
+
+                                    <a href="https://wa.me/917607059859?text=Hello,%20checking%20status%20for%20Order%20%23HS-{{ order.id }}" target="_blank" class="text-success small text-decoration-none fw-bold">
+                                        <i class="fab fa-whatsapp me-1"></i> Track on WA
+                                    </a>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="text-center py-5">
+                                <img src="https://cdn-icons-png.flaticon.com/512/2038/2038854.png" width="100" class="mb-4 opacity-50">
+                                <h4 class="text-muted">No masterpiece ordered yet!</h4>
+                                <a href="/shop" class="btn btn-primary rounded-pill px-4 mt-2">Browse Gallery</a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="settings">
+                    <div class="profile-card p-4">
+                        <h3 class="content-header">Manage Profile</h3>
+                        <form action="{{ url_for('profile') }}" method="POST">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold">Full Name</label>
+                                    <input type="text" class="form-control bg-light" value="{{ user.username }}" readonly>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold">Contact Number</label>
+                                    <input type="tel" name="phone" class="form-control" value="{{ user.phone or '' }}" placeholder="+91">
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label small fw-bold">Shipping Address</label>
+                                    <textarea name="address" class="form-control" rows="3" placeholder="Street, Colony, Landmark...">{{ user.address or '' }}</textarea>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold">Pincode</label>
+                                    <input type="text" name="pincode" class="form-control" value="{{ user.pincode or '' }}">
+                                </div>
+                                <div class="col-12 mt-4">
+                                    <button type="submit" class="btn btn-primary w-100 py-3 rounded-pill fw-bold" style="background: linear-gradient(to right, var(--primary), var(--secondary)); border:none;">
+                                        Save Profile Changes
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<a href="{{ url_for('home') }}" class="floating-home-btn">
+    <i class="fas fa-home"></i>
+    <span>Back to Home</span>
+</a>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Profile Picture Preview
+    function previewImage(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('profilePreview').src = e.target.result;
+                document.getElementById('photoUpdatePrompt').style.display = 'block';
+                // Animating the button
+                document.getElementById('photoUpdatePrompt').classList.add('animate__animated', 'animate__fadeIn');
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    // Preserve active tab on reload (Optional but professional)
+    document.addEventListener("DOMContentLoaded", function() {
+        var activeTab = localStorage.getItem('activeTab');
+        if (activeTab) {
+            var tabEl = document.querySelector('#' + activeTab);
+            if (tabEl) {
+                var tab = new bootstrap.Tab(tabEl);
+                tab.show();
+            }
+        }
+        
+        var tabButtons = document.querySelectorAll('button[data-bs-toggle="pill"]');
+        tabButtons.forEach(btn => {
+            btn.addEventListener('shown.bs.tab', function(e) {
+                localStorage.setItem('activeTab', e.target.id);
+            });
+        });
+    });
+</script>
+
+</body>
+</html>

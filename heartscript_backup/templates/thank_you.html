@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Confirmed | HeartScript Artistry Studio</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@400;700;900&family=Great+Vibes&family=Dancing+Script:wght@400;700&family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+
+    <style>
+        :root {
+            --primary: #ff416c;
+            --primary-dark: #e0395f;
+            --secondary: #ff4b2b;
+            --dark: #1a1a1a;
+            --glass: rgba(255, 255, 255, 0.9);
+            --soft-rose: #fffafa;
+            --green: #2ecc71;
+            --whatsapp-color: #25d366;
+            --gold: #c5a059;
+            --insta: #E1306C;
+            --text-muted: #888;
+            --border-color: #f0f0f0;
+            --shadow-sm: 0 5px 15px rgba(0,0,0,0.05);
+            --shadow-lg: 0 25px 50px rgba(0,0,0,0.1);
+        }
+
+        /* --- GLOBAL RESET & SCROLLBAR --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #fff5f6 0%, #ffffff 50%, #fff5f6 100%);
+            color: var(--dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* --- NAVIGATION --- */
+        nav {
+            padding: 20px 8%;
+            background: var(--glass);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(15px);
+            position: sticky; top: 0; z-index: 1000;
+            border-bottom: 1px solid rgba(255, 65, 108, 0.1);
+            box-shadow: var(--shadow-sm);
+        }
+        .logo { 
+            font-family: 'Great Vibes', cursive; 
+            color: var(--primary); 
+            text-decoration: none; 
+            font-size: 32px; 
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        .logo:hover { transform: scale(1.05); }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--dark);
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-left: 25px;
+            transition: 0.3s;
+        }
+        .nav-links a:hover { color: var(--primary); }
+
+        /* --- MAIN SUCCESS CONTAINER --- */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .thank-you-card {
+            max-width: 650px;
+            margin: 0 auto 60px;
+            padding: 50px 40px;
+            background: white;
+            border-radius: 50px;
+            text-align: center;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid rgba(255,255,255,0.8);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .thank-you-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 8px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+        }
+
+        .success-icon-wrapper {
+            width: 100px; height: 100px;
+            background: linear-gradient(135deg, var(--green), #27ae60);
+            color: white;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 50px; margin: 0 auto 30px;
+            box-shadow: 0 15px 30px rgba(46, 204, 113, 0.3);
+            animation: heartBeat 1.5s infinite;
+        }
+
+        .order-badge {
+            background: #fff0f3;
+            color: var(--primary);
+            padding: 10px 25px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            display: inline-block;
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        h1 { 
+            font-family: 'Playfair Display', serif; 
+            font-size: 3rem; 
+            color: var(--dark); 
+            margin-bottom: 10px;
+            font-weight: 900;
+        }
+
+        .sub-text {
+            color: var(--text-muted);
+            font-size: 1rem;
+            margin-bottom: 35px;
+        }
+
+        /* --- PROGRESS TRACKER --- */
+        .order-timeline {
+            display: flex;
+            justify-content: space-between;
+            margin: 50px auto;
+            max-width: 90%;
+            position: relative;
+        }
+        .timeline-line {
+            position: absolute;
+            top: 20px; left: 0;
+            height: 3px; width: 100%;
+            background: #f0f0f0;
+            z-index: 1;
+        }
+        .timeline-progress {
+            position: absolute;
+            top: 0; left: 0;
+            height: 100%; width: 25%;
+            background: var(--green);
+            transition: 1s ease;
+        }
+        .timeline-step {
+            z-index: 2;
+            background: white;
+            width: 45px; height: 45px;
+            border-radius: 50%;
+            border: 3px solid #f0f0f0;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px; color: #ccc;
+            transition: 0.5s;
+        }
+        .timeline-step.completed {
+            border-color: var(--green);
+            color: var(--green);
+            background: #e9f9ef;
+        }
+        .timeline-step.active {
+            border-color: var(--primary);
+            color: var(--primary);
+            box-shadow: 0 0 15px rgba(255, 65, 108, 0.3);
+        }
+        .step-info {
+            position: absolute;
+            top: 55px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            width: 80px;
+            text-align: center;
+            margin-left: -18px;
+            color: #555;
+            text-transform: uppercase;
+        }
+
+        /* --- ORDER DETAILS BOX --- */
+        .details-container {
+            background: #fcfcfc;
+            border: 1px solid var(--border-color);
+            border-radius: 30px;
+            padding: 30px;
+            margin-bottom: 40px;
+            text-align: left;
+        }
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 0;
+            border-bottom: 1px dashed #eee;
+        }
+        .detail-row:last-child { border-bottom: none; }
+        .detail-label { color: #777; font-weight: 500; font-size: 0.9rem; }
+        .detail-value { color: var(--dark); font-weight: 600; font-size: 0.9rem; }
+
+        /* --- WHATSAPP ACTION CARD --- */
+        .whatsapp-action-card {
+            background: #f4fff8;
+            border: 2px dashed var(--whatsapp-color);
+            border-radius: 35px;
+            padding: 40px 30px;
+            margin: 40px 0;
+            transition: 0.3s;
+        }
+        .whatsapp-action-card:hover { transform: translateY(-5px); }
+        
+        .wa-title {
+            color: #128C7E;
+            font-weight: 700;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-whatsapp-payment {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            background: var(--whatsapp-color);
+            color: white !important;
+            text-decoration: none;
+            padding: 20px 40px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            width: 100%;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 10px 20px rgba(37, 211, 102, 0.2);
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .btn-whatsapp-payment:hover {
+            background: #20bd5a;
+            transform: scale(1.03);
+            box-shadow: 0 15px 30px rgba(37, 211, 102, 0.4);
+        }
+
+        .invoice-notice {
+            margin-top: 25px;
+            padding: 15px;
+            background: #fff;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            color: #666;
+            border: 1px solid #ffe5eb;
+        }
+        .invoice-notice b { color: var(--primary); }
+
+        /* --- BUTTONS --- */
+        .action-btns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        .btn-outline {
+            padding: 18px;
+            border-radius: 18px;
+            border: 2px solid var(--dark);
+            background: transparent;
+            color: var(--dark);
+            font-weight: 600;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+        .btn-outline:hover { background: var(--dark); color: white; }
+
+        .btn-primary-gradient {
+            padding: 18px;
+            border-radius: 18px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            font-weight: 600;
+            text-decoration: none;
+            border: none;
+            transition: 0.3s;
+            text-align: center;
+        }
+        .btn-primary-gradient:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(255, 65, 108, 0.3); }
+
+        /* --- WISHLIST SIDEBAR --- */
+        #wishlist-sidebar {
+            position: fixed; right: -450px; top: 0; width: 400px; height: 100%;
+            background: white; z-index: 3000; box-shadow: -15px 0 40px rgba(0,0,0,0.1);
+            transition: 0.6s cubic-bezier(0.77, 0, 0.175, 1); padding: 40px;
+        }
+        #wishlist-sidebar.open { right: 0; }
+        .wish-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; }
+        .wish-header h2 { font-family: 'Cinzel', serif; font-size: 1.5rem; }
+
+        /* --- BRAND STORY SECTION --- */
+        .brand-section {
+            padding: 100px 8%;
+            background: white;
+            position: relative;
+        }
+        .brand-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 80px;
+            align-items: center;
+        }
+        .brand-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            line-height: 1.1;
+            margin-bottom: 30px;
+            color: #2b0d14;
+        }
+        .brand-content p {
+            font-size: 1.1rem;
+            color: #555;
+            margin-bottom: 25px;
+            text-align: justify;
+        }
+        .founder-box {
+            background: var(--soft-rose);
+            padding: 50px;
+            border-radius: 40px;
+            text-align: center;
+            border: 1px solid #feeef0;
+            position: relative;
+        }
+        .founder-img {
+            width: 140px; height: 140px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 25px;
+            border: 5px solid white;
+            box-shadow: var(--shadow-sm);
+        }
+        .signature {
+            font-family: 'Dancing Script', cursive;
+            font-size: 2rem;
+            color: var(--primary);
+            margin-top: 20px;
+        }
+
+        /* --- RESPONSIVE DESIGN --- */
+        @media (max-width: 992px) {
+            .brand-grid { grid-template-columns: 1fr; gap: 50px; }
+            .brand-title { font-size: 2.5rem; text-align: center; }
+        }
+
+        @media (max-width: 600px) {
+            nav { padding: 15px 5%; }
+            .thank-you-card { padding: 40px 20px; border-radius: 35px; }
+            h1 { font-size: 2.2rem; }
+            .order-timeline { max-width: 100%; }
+            .step-info { font-size: 0.55rem; width: 60px; margin-left: -10px; }
+            .action-btns { grid-template-columns: 1fr; }
+            #wishlist-sidebar { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="/" class="logo">HeartScript</a>
+        <div class="nav-links">
+            <a href="/shop">Gallery</a>
+            <a href="/profile">My Profile</a>
+            <a href="javascript:void(0)" onclick="toggleWishlist()" style="position:relative;">
+                <i class="fas fa-shopping-bag"></i>
+                <span id="wish-count" style="position:absolute; top:-12px; right:-15px; background:var(--primary); color:white; font-size:0.6rem; width:20px; height:20px; border-radius:50%; display:flex; align-items:center; justify-content:center; border:2px solid white;">0</span>
+            </a>
+        </div>
+    </nav>
+
+    <div id="wishlist-sidebar">
+        <div class="wish-header">
+            <h2>Saved Gems</h2>
+            <i class="fas fa-times" onclick="toggleWishlist()" style="cursor:pointer; font-size:1.5rem;"></i>
+        </div>
+        <div id="wish-items-container">
+            </div>
+    </div>
+
+    <div class="container">
+        <div class="thank-you-card animate__animated animate__fadeInUp">
+            <div class="success-icon-wrapper">
+                <i class="fas fa-check"></i>
+            </div>
+            
+            <div class="order-badge">Order Placed Successfully</div>
+            <h1>Thank You!</h1>
+            <p class="sub-text">Your artistic journey with HeartScript has just begun.</p>
+
+            <div class="order-timeline">
+                <div class="timeline-line"><div class="timeline-progress"></div></div>
+                <div class="timeline-step completed">
+                    <i class="fas fa-shopping-cart"></i>
+                    <div class="step-info">Placed</div>
+                </div>
+                <div class="timeline-step active">
+                    <i class="fas fa-wallet"></i>
+                    <div class="step-info">Payment</div>
+                </div>
+                <div class="timeline-step">
+                    <i class="fas fa-pen-fancy"></i>
+                    <div class="step-info">Crafting</div>
+                </div>
+                <div class="timeline-step">
+                    <i class="fas fa-box-open"></i>
+                    <div class="step-info">Shipped</div>
+                </div>
+            </div>
+
+            {% if order %}
+            <div class="details-container">
+                <div style="text-align: center; margin-bottom: 20px; font-weight: 700; color: var(--primary);">
+                    ORDER ID: #HS-{{ order.id }}
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Masterpiece</span>
+                    <span class="detail-value">{{ order.items }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Investment</span>
+                    <span class="detail-value">₹{{ order.total }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Customer Name</span>
+                    <span class="detail-value">{{ order.name }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Delivery To</span>
+                    <span class="detail-value">{{ order.address or 'Standard Delivery' }}</span>
+                </div>
+            </div>
+
+            <div class="whatsapp-action-card animate__animated animate__pulse animate__infinite">
+                <div class="wa-title">
+                    <i class="fab fa-whatsapp" style="font-size: 1.5rem;"></i>
+                    <span>ACTION REQUIRED</span>
+                </div>
+                <button onclick="handleWhatsAppRedirect()" class="btn-whatsapp-payment">
+                    Order Confirmed, click to proceed for payment
+                </button>
+                
+                <div class="invoice-notice">
+                    <i class="fas fa-file-invoice"></i>
+                    Your <b>Tax Invoice</b> is now available in your <b>Profile Section</b>. 
+                    <br>Note: It will show a "Payment Pending" alert until our admin confirms your transaction.
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="action-btns">
+                <a href="/shop" class="btn-outline">Browse More Art</a>
+                <a href="/profile" class="btn-primary-gradient">View My Orders</a>
+            </div>
+
+            <div style="margin-top: 40px;">
+                <p style="font-size: 0.8rem; color: #bbb;">Questions? Contact us at support@heartscript.in</p>
+            </div>
+        </div>
+    </div>
+
+    <section class="brand-section">
+        <div class="brand-grid">
+            <div class="brand-content animate__animated animate__fadeInLeft">
+                <h2 class="brand-title">The Soul Behind <br><span style="color: var(--primary);">HeartScript</span></h2>
+                <p>In a world dominated by cold digital pixels and robotic automation, we chose to return to the warmth of the human touch. HeartScript wasn't started as a business; it was started as a rebellion against the "instant" culture.</p>
+                <p>Every stroke of the pen you ordered carries the heartbeat of an artist. We use archival-grade inks and hand-picked papers to ensure your message doesn't just last for a season, but for a lifetime. When you hold our art, you're holding time itself.</p>
+                <p><strong>Our Promise:</strong> No fonts, no printers, no compromises. Just pure, raw, and beautiful human emotion captured in ink.</p>
+            </div>
+            
+            <div class="founder-box animate__animated animate__fadeInRight">
+                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?fit=crop&w=300&h=300" alt="Founder" class="founder-img">
+                <h3 style="font-family: 'Playfair Display'; font-weight: 700;">A Message From Us</h3>
+                <p style="font-style: italic; color: #666; font-size: 0.95rem; margin-top: 15px;">"We believe that your love, your apologies, and your dreams deserve the respect of a handmade gesture. Thank you for letting us be the bridge between your heart and the paper."</p>
+                <div class="signature">With love & ink,</div>
+                <p style="font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; color: #ccc; margin-top: 5px;">HeartScript Artistry Team</p>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // --- WHATSAPP REDIRECT LOGIC ---
+        function handleWhatsAppRedirect() {
+            // Fetching details from Jinja2 template
+            const orderId = "{{ order.id }}";
+            const name = "{{ order.name }}";
+            const total = "{{ order.total }}";
+            const items = "{{ order.items }}";
+            const phone = "{{ order.phone }}";
+
+            const message = `*OFFICIAL ORDER CONFIRMATION*%0A` +
+                            `------------------------------%0A` +
+                            `*Order ID:* %23HS-${orderId}%0A` +
+                            `*Customer:* ${name}%0A` +
+                            `*Artworks:* ${items}%0A` +
+                            `*Total Investment:* ₹${total}%0A` +
+                            `*Contact:* ${phone}%0A` +
+                            `------------------------------%0A` +
+                            `Hello HeartScript! I have successfully placed my order on the website. Please guide me with the payment QR/UPI details so I can proceed further.`;
+
+            const whatsappUrl = `https://wa.me/917607059859?text=${message}`;
+            
+            // Open in new tab
+            window.open(whatsappUrl, '_blank');
+        }
+
+        // --- CONFETTI ANIMATION ---
+        function launchConfetti() {
+            var duration = 5 * 1000;
+            var animationEnd = Date.now() + duration;
+            var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+            function randomInRange(min, max) {
+              return Math.random() * (max - min) + min;
+            }
+
+            var interval = setInterval(function() {
+              var timeLeft = animationEnd - Date.now();
+
+              if (timeLeft <= 0) {
+                return clearInterval(interval);
+              }
+
+              var particleCount = 50 * (timeLeft / duration);
+              confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
+              confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
+            }, 250);
+        }
+
+        // --- WISHLIST LOGIC ---
+        let wishlist = JSON.parse(localStorage.getItem('heartscript_wish')) || [];
+
+        function toggleWishlist() {
+            document.getElementById('wishlist-sidebar').classList.toggle('open');
+            renderWishlist();
+        }
+
+        function renderWishlist() {
+            const container = document.getElementById('wish-items-container');
+            const countBadge = document.getElementById('wish-count');
+            countBadge.innerText = wishlist.length;
+
+            if (wishlist.length === 0) {
+                container.innerHTML = `<div style="text-align:center; padding:50px 20px; color:#ccc;">
+                    <i class="fas fa-heart" style="font-size:3rem; margin-bottom:15px; opacity:0.3;"></i>
+                    <p>Your wishlist is a blank canvas. Start adding art!</p>
+                </div>`;
+                return;
+            }
+
+            container.innerHTML = wishlist.map((item, index) => `
+                <div style="display:flex; align-items:center; gap:15px; margin-bottom:20px; background:#f9f9f9; padding:10px; border-radius:15px;">
+                    <img src="${item.img}" style="width:70px; height:70px; border-radius:10px; object-fit:cover;">
+                    <div style="flex:1">
+                        <h4 style="font-size:0.9rem; margin:0;">${item.name}</h4>
+                        <p style="color:var(--primary); font-weight:700; margin:0;">${item.price}</p>
+                    </div>
+                    <i class="fas fa-trash-alt" onclick="removeFromWish(${index})" style="color:#ddd; cursor:pointer;"></i>
+                </div>
+            `).join('');
+        }
+
+        function removeFromWish(index) {
+            wishlist.splice(index, 1);
+            localStorage.setItem('heartscript_wish', JSON.stringify(wishlist));
+            renderWishlist();
+        }
+
+        // --- INITIALIZE ---
+        window.onload = () => {
+            launchConfetti();
+            renderWishlist();
+            // Optional: Clear Cart as order is done
+            localStorage.removeItem('heartscript_cart');
+        };
+    </script>
+</body>
+</html>

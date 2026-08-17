@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Insights | HeartScript Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,600;1,600&family=Great+Vibes&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body style="margin: 0; padding: 40px 20px; font-family: 'Poppins', sans-serif; background: #fff5f6; min-height: 100vh; display: flex; align-items: center; justify-content: center; overflow-x: hidden; position: relative;">
+
+    <div style="position: absolute; top: -150px; right: -100px; width: 500px; height: 500px; background: linear-gradient(135deg, #ff416c, #ff4b2b); filter: blur(100px); border-radius: 50%; opacity: 0.2; z-index: 0; animation: float 15s infinite alternate;"></div>
+    <div style="position: absolute; bottom: -100px; left: -100px; width: 400px; height: 400px; background: #ffc0cb; filter: blur(80px); border-radius: 50%; opacity: 0.3; z-index: 0; animation: float 12s infinite alternate-reverse;"></div>
+
+    <style>
+        @keyframes float { from { transform: translate(0,0); } to { transform: translate(40px, 60px); } }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 25px 50px rgba(255, 65, 108, 0.12);
+        }
+        .data-label {
+            font-size: 0.7rem;
+            color: #ff416c;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+            display: block;
+        }
+        .data-value {
+            color: #333;
+            font-size: 0.95rem;
+            margin: 0 0 15px 0;
+            font-weight: 400;
+        }
+        @media print {
+            .no-print { display: none !important; }
+            body { background: white; padding: 0; }
+            .glass-card { box-shadow: none; border: 1px solid #eee; backdrop-filter: none; }
+        }
+    </style>
+
+    <div class="glass-card" style="position: relative; z-index: 10; max-width: 850px; width: 100%; border-radius: 40px; overflow: hidden;">
+        
+        <div style="background: linear-gradient(45deg, #ff416c, #ff4b2b); padding: 40px; color: white; display: flex; justify-content: space-between; align-items: center;">
+            <div style="flex: 1;">
+                <div style="font-family: 'Great Vibes', cursive; font-size: 2.2rem; margin-bottom: 5px; opacity: 0.9;">HeartScript</div>
+                <h1 style="margin: 0; font-family: 'Playfair Display', serif; font-size: 2rem; letter-spacing: 0.5px;">Customer Profile</h1>
+                <p style="margin: 10px 0 0 0; font-size: 0.85rem; background: rgba(255,255,255,0.2); display: inline-block; padding: 4px 15px; border-radius: 50px;">
+                    <i class="fas fa-user-shield me-1"></i> Admin Access Only
+                </p>
+            </div>
+            <div class="no-print">
+                <a href="javascript:history.back()" style="display: flex; align-items: center; gap: 8px; color: white; text-decoration: none; background: rgba(255,255,255,0.15); padding: 12px 20px; border-radius: 15px; font-weight: 500; transition: 0.3s; border: 1px solid rgba(255,255,255,0.3);" onmouseover="this.style.background='rgba(255,255,255,0.25)'" onmouseout="this.style.background='rgba(255,255,255,0.15)'">
+                    <i class="fas fa-arrow-left"></i> Back
+                </a>
+            </div>
+        </div>
+
+        <div style="padding: 40px;">
+            <div style="display: grid; grid-template-columns: auto 1fr; gap: 30px; margin-bottom: 40px; align-items: center; border-bottom: 1px solid #f0f0f0; padding-bottom: 30px;">
+                <div style="position: relative;">
+                    <img src="{{ user.profile_pic }}" alt="User" style="width: 110px; height: 110px; border-radius: 35px; object-fit: cover; box-shadow: 0 10px 20px rgba(0,0,0,0.1); border: 4px solid white;">
+                    <div style="position: absolute; bottom: -10px; right: -10px; background: #28a745; width: 25px; height: 25px; border-radius: 50%; border: 3px solid white; title: 'Active User'"></div>
+                </div>
+                <div>
+                    <h2 style="margin: 0; font-family: 'Playfair Display', serif; font-size: 1.8rem; color: #333;">{{ user.username }}</h2>
+                    <div style="display: flex; gap: 10px; margin-top: 10px;">
+                        <span style="background: #fff0f3; color: #ff416c; padding: 5px 15px; border-radius: 10px; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.5px;">ROLE: {{ user.role.upper() }}</span>
+                        <span style="background: #f0f0f0; color: #666; padding: 5px 15px; border-radius: 10px; font-size: 0.75rem; font-weight: 600;">ID: #HS{{ user.id }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px;">
+                
+                <div style="background: rgba(255,245,246,0.5); padding: 25px; border-radius: 25px;">
+                    <h3 style="margin: 0 0 20px 0; font-size: 1.1rem; color: #333; display: flex; align-items: center; gap: 10px;">
+                        <i class="fas fa-fingerprint" style="color: #ff416c;"></i> Account Info
+                    </h3>
+                    
+                    <label class="data-label">Email Address</label>
+                    <p class="data-value" style="font-weight: 600;">{{ user.email }}</p>
+
+                    <label class="data-label">Phone Number</label>
+                    <p class="data-value">{{ user.phone or 'Not Provided' }}</p>
+
+                    <label class="data-label">Firebase Identity</label>
+                    <p class="data-value" style="font-size: 0.75rem; color: #888; font-family: monospace; word-break: break-all;">{{ user.firebase_uid or 'Standard Account' }}</p>
+                </div>
+
+                <div style="background: rgba(255,245,246,0.5); padding: 25px; border-radius: 25px;">
+                    <h3 style="margin: 0 0 20px 0; font-size: 1.1rem; color: #333; display: flex; align-items: center; gap: 10px;">
+                        <i class="fas fa-map-marker-alt" style="color: #ff416c;"></i> Delivery Details
+                    </h3>
+
+                    <label class="data-label">Primary Address</label>
+                    <p class="data-value" style="line-height: 1.6;">{{ user.address or 'No address details provided by user.' }}</p>
+
+                    <label class="data-label">Pincode / Zip</label>
+                    <p class="data-value" style="font-weight: 600; color: #ff416c; font-size: 1.1rem;">{{ user.pincode or 'N/A' }}</p>
+                </div>
+
+            </div>
+
+            <div class="no-print" style="margin-top: 40px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; border-top: 1px solid #eee; padding-top: 30px;">
+                {% if user.phone %}
+                <a href="https://wa.me/91{{ user.phone }}" target="_blank" 
+                   style="background: #25D366; color: white; text-decoration: none; padding: 18px; border-radius: 20px; font-weight: 600; text-align: center; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.3s; box-shadow: 0 10px 20px rgba(37, 211, 102, 0.2);"
+                   onmouseover="this.style.transform='translateY(-3px)'" onmouseout="this.style.transform='translateY(0)'">
+                    <i class="fab fa-whatsapp" style="font-size: 1.4rem;"></i> Chat with {{ user.username.split()[0] }}
+                </a>
+                {% endif %}
+                
+                <button onclick="window.print()" 
+                        style="background: #333; color: white; border: none; padding: 18px; border-radius: 20px; font-weight: 600; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.3s; box-shadow: 0 10px 20px rgba(0,0,0,0.1);"
+                        onmouseover="this.style.background='#000'; this.style.transform='translateY(-3px)'" onmouseout="this.style.background='#333'; this.style.transform='translateY(0)'">
+                    <i class="fas fa-print"></i> Generate Shipping Label
+                </button>
+            </div>
+        </div>
+
+        <div style="background: #fdfcfb; padding: 15px; text-align: center; border-top: 1px solid #f0f0f0;">
+            <p style="margin: 0; font-size: 0.75rem; color: #bbb;">&copy; 2026 HeartScript Gifting Solutions Pvt. Ltd.</p>
+        </div>
+    </div>
+</body>
+</html>

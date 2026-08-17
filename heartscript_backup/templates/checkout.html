@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <!-- CSRF Token Meta Tag Added Here -->
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>Secure Checkout | HeartScript Exclusive Artistry</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@700&family=Dancing+Script:wght@600&family=Great+Vibes&family=Montserrat:wght@300;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        :root {
+            --romantic-red: #ff4d6d;
+            --soft-blush: #fff0f3;
+            --rose-gold: #e29578;
+            --deep-rose: #590d22;
+            --pure-white: #ffffff;
+            --text-dark: #2b2d42;
+            --text-muted: #6d6875;
+            --bg-solid: #2d0a10;
+            --card-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+            --whatsapp-green: #25D366;
+            --gradient-primary: linear-gradient(135deg, #ff4d6d 0%, #ff758c 100%);
+        }
+
+        * {
+            box-sizing: border-box;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            background-color: var(--bg-solid);
+            background-image: url("https://www.transparenttextures.com/patterns/cream-paper.png");
+            color: var(--text-dark);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        nav {
+            padding: 15px 8%;
+            background: rgba(255, 255, 255, 0.98);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            position: sticky;
+            top: 0;
+            z-index: 2000;
+            backdrop-filter: blur(15px);
+        }
+
+        .logo {
+            font-family: 'Great Vibes', cursive;
+            color: var(--romantic-red);
+            text-decoration: none;
+            font-size: 32px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .nav-right-text {
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.4rem;
+            color: var(--deep-rose);
+            font-weight: 700;
+        }
+
+        .checkout-container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+            display: flex;
+            flex-direction: row;
+            gap: 30px;
+            align-items: flex-start;
+        }
+
+        .order-review-card {
+            flex: 1;
+            background: var(--pure-white);
+            border-radius: 35px;
+            padding: 30px;
+            box-shadow: var(--card-shadow);
+            position: sticky;
+            top: 110px;
+            border: 1px solid rgba(255, 77, 109, 0.1);
+        }
+
+        .review-title {
+            font-family: 'Playfair Display', serif;
+            color: var(--deep-rose);
+            font-size: 1.6rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .product-summary {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            background: var(--soft-blush);
+            padding: 15px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+        }
+
+        .product-summary img {
+            width: 85px;
+            height: 85px;
+            border-radius: 15px;
+            object-fit: cover;
+            border: 2px solid white;
+        }
+
+        .price-details {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px dashed #ffd1d9;
+        }
+
+        .price-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+            color: var(--text-muted);
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 700;
+            color: var(--romantic-red);
+            font-size: 1.3rem;
+            margin-top: 10px;
+        }
+
+        .address-card {
+            flex: 1.7;
+            background: var(--pure-white);
+            border-radius: 35px;
+            padding: 40px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .delivery-toggle {
+            display: flex;
+            background: #f8f9fa;
+            border-radius: 20px;
+            padding: 6px;
+            margin-bottom: 30px;
+            border: 1px solid #eee;
+        }
+
+        .toggle-opt {
+            flex: 1;
+            padding: 14px;
+            text-align: center;
+            cursor: pointer;
+            border-radius: 15px;
+            font-weight: 600;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            transition: 0.4s;
+        }
+
+        .toggle-opt.active {
+            background: var(--gradient-primary);
+            color: white;
+            box-shadow: 0 8px 15px rgba(255, 77, 109, 0.3);
+        }
+
+        .search-container {
+            position: relative;
+            width: 100%;
+            margin-bottom: 20px;
+            z-index: 1001;
+        }
+
+        .manual-search-box {
+            position: relative;
+            width: 100%;
+        }
+
+        .manual-search-box input {
+            padding-left: 55px;
+            border: 2px solid #f0f0f0;
+            background: #fff;
+            height: 60px;
+            border-radius: 18px;
+            font-size: 1rem;
+        }
+
+        .manual-search-box input:focus {
+            border-color: var(--romantic-red);
+            box-shadow: 0 0 0 5px var(--soft-blush);
+        }
+
+        .manual-search-box i {
+            position: absolute;
+            left: 20px;
+            top: 20px;
+            color: var(--romantic-red);
+            font-size: 1.2rem;
+        }
+
+        #search-results {
+            position: absolute;
+            top: 65px;
+            left: 0;
+            right: 0;
+            background: white;
+            z-index: 2000;
+            border-radius: 18px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+            max-height: 250px;
+            overflow-y: auto;
+            display: none;
+            border: 1px solid #eee;
+        }
+
+        .result-item {
+            padding: 15px 20px;
+            border-bottom: 1px solid #f8f8f8;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .result-item:hover { background: var(--soft-blush); }
+
+        .location-fetch-btn {
+            width: 100%;
+            padding: 16px;
+            background: #fff5f6;
+            border: 2px dashed var(--romantic-red);
+            border-radius: 18px;
+            color: var(--romantic-red);
+            font-weight: 700;
+            cursor: pointer;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-size: 1rem;
+        }
+
+        .location-fetch-btn:hover { background: var(--romantic-red); color: white; }
+
+        #map-canvas {
+            height: 380px;
+            width: 100%;
+            border-radius: 25px;
+            border: 3px solid var(--soft-blush);
+            margin-bottom: 10px;
+        }
+
+        .input-box {
+            position: relative;
+            margin-bottom: 20px;
+            width: 100%;
+        }
+
+        .input-box i {
+            position: absolute;
+            left: 20px;
+            top: 20px;
+            color: var(--romantic-red);
+            font-size: 1.1rem;
+            z-index: 5;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 18px 18px 18px 55px;
+            border: 2px solid #f0f0f0;
+            border-radius: 18px;
+            font-family: 'Poppins', sans-serif;
+            outline: none;
+            background: #fafafa;
+            font-size: 0.95rem;
+        }
+
+        input:focus, textarea:focus {
+            background: #fff;
+            border-color: var(--romantic-red);
+        }
+
+        input:invalid.touched, textarea:invalid.touched {
+            border-color: #ff8080;
+        }
+
+        .field-error {
+            color: #d9364f;
+            font-size: 0.78rem;
+            margin: -14px 0 14px 4px;
+            display: none;
+        }
+
+        .field-error.show { display: block; }
+
+        .btn-complete {
+            width: 100%;
+            background: var(--gradient-primary);
+            color: white;
+            padding: 22px;
+            border: none;
+            border-radius: 22px;
+            font-size: 1.15rem;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 15px;
+            box-shadow: 0 12px 25px rgba(255, 77, 109, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-complete:active { transform: scale(0.98); }
+
+        .btn-complete:disabled { background: #d1d1d1; cursor: not-allowed; box-shadow: none; }
+
+        .payment-notice {
+            background: #fff9eb;
+            border-left: 5px solid #ffcc00;
+            padding: 15px;
+            border-radius: 15px;
+            margin-top: 20px;
+            font-size: 0.8rem;
+            color: #7d6327;
+            display: flex;
+            gap: 10px;
+            line-height: 1.4;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .fa-beat { animation: pulse 1.2s infinite; }
+
+        @media (max-width: 992px) {
+            .checkout-container { flex-direction: column; margin-top: 20px; }
+            .order-review-card { position: relative; top: 0; width: 100%; order: 1; }
+            .address-card { width: 100%; order: 2; padding: 25px; }
+            nav { padding: 12px 5%; }
+        }
+
+        @media (max-width: 600px) {
+            .address-grid { grid-template-columns: 1fr !important; gap: 0; }
+            .logo { font-size: 26px; }
+            .nav-right-text { font-size: 1.1rem; }
+            #map-canvas { height: 300px; }
+            .btn-complete { font-size: 1rem; padding: 18px; }
+        }
+
+        .premium-checkout-footer {
+            background: #fff;
+            border-top: 1px solid #eee;
+            margin-top: 60px;
+            padding: 50px 20px;
+            text-align: center;
+        }
+
+        .footer-msg {
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.5rem;
+            color: var(--deep-rose);
+            margin-bottom: 20px;
+        }
+
+        .btn-checkout-return {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 30px;
+            color: var(--romantic-red);
+            border: 2px solid var(--romantic-red);
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            margin-bottom: 30px;
+        }
+
+        .secure-badges {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .badge-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #999;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            font-weight: 500;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+        <a href="/" class="logo">HeartScript</a>
+        <div class="nav-right-text">Secure Checkout</div>
+    </nav>
+
+    <div class="checkout-container">
+        <div class="order-review-card">
+            <h3 class="review-title"><i class="fas fa-shopping-bag"></i> Your Selection</h3>
+
+            <div class="product-summary">
+                <img src="{{ product.image_url }}" alt="{{ product.name }}">
+                <div>
+                    <h4 style="margin:0; font-size: 1rem; font-family: 'Playfair Display';">{{ product.name }}</h4>
+                    <p style="color: var(--romantic-red); font-weight: 700; margin: 5px 0 0 0; font-size: 1.1rem;">₹{{ product.price }}</p>
+                </div>
+            </div>
+
+            <div class="price-details">
+                <div class="price-row">
+                    <span>Art Piece Value</span>
+                    <span>₹{{ product.price }}</span>
+                </div>
+                <div class="price-row">
+                    <span>Custom Calligraphy</span>
+                    <span style="color: #2ecc71;">Included</span>
+                </div>
+                <div class="price-row">
+                    <span>Express Shipping</span>
+                    <span style="color: #2ecc71;">FREE</span>
+                </div>
+                <div class="total-row">
+                    <span>Final Amount:</span>
+                    <span>₹{{ product.price }}</span>
+                </div>
+            </div>
+
+            <div class="payment-notice">
+                <i class="fas fa-info-circle" style="font-size: 1.2rem; margin-top: 3px;"></i>
+                <span>Your details are safe. After clicking confirm, you'll be redirected to our artist's WhatsApp for payment & draft approval.</span>
+            </div>
+        </div>
+
+        <div class="address-card">
+            <div class="delivery-toggle">
+                <div class="toggle-opt active" id="mode-self" onclick="changeMode('self')">
+                    <i class="fas fa-user-heart"></i> For Myself
+                </div>
+                <div class="toggle-opt" id="mode-gift" onclick="changeMode('gift')">
+                    <i class="fas fa-gift"></i> Send as Gift
+                </div>
+            </div>
+
+            <h2 id="form-heading" style="font-family: 'Playfair Display'; margin-bottom: 25px; font-size: 1.6rem; color: var(--deep-rose);">Delivery Details</h2>
+
+            <div class="search-container">
+                <div class="manual-search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="map-search-input" placeholder="Search locality, building or landmark..." autocomplete="off">
+                </div>
+                <div id="search-results"></div>
+            </div>
+
+            <button type="button" class="location-fetch-btn" id="gps-btn" onclick="toggleGPS()">
+                <i class="fas fa-location-arrow"></i> Detect My Live Location
+            </button>
+
+            <div class="map-section">
+                <div id="map-canvas"></div>
+                <p style="text-align:center; color: var(--text-muted); margin-top: 12px; font-size: 0.8rem; background: #fff; position: relative; z-index: 10;">
+                    <i class="fas fa-hand-pointer"></i> <b>Tip:</b> Drag the heart marker to your exact house
+                </p>
+            </div>
+
+            <form id="checkout-form" novalidate>
+                <div class="address-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div class="input-box">
+                        <i class="fas fa-user"></i>
+                        <input type="text" id="name" placeholder="Recipient Full Name" value="{{ session.get('user_name', '') }}" required>
+                    </div>
+                    <div class="input-box">
+                        <i class="fas fa-phone"></i>
+                        <input type="tel" id="phone" placeholder="WhatsApp Number" inputmode="numeric" maxlength="10" required>
+                    </div>
+                </div>
+
+                <div class="input-box">
+                    <i class="fas fa-building"></i>
+                    <input type="text" id="house" placeholder="Flat No. / House Name / Street Address" required>
+                </div>
+
+                <div class="input-box">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <input type="text" id="pincode" placeholder="6-Digit Pincode" inputmode="numeric" maxlength="6" required>
+                </div>
+
+                <div class="input-box">
+                    <i class="fas fa-map-pin"></i>
+                    <textarea id="address" placeholder="Full Area Address (Auto-filled by Map)" rows="3" required></textarea>
+                </div>
+
+                <div class="input-box">
+                    <i class="fas fa-feather-alt"></i>
+                    <textarea id="note" placeholder="Write your message to be scripted (or any special instructions)..." rows="4"></textarea>
+                </div>
+
+                <button type="submit" class="btn-complete">
+                    <span>Confirm Order Request</span> <i class="fas fa-arrow-right"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <footer class="premium-checkout-footer">
+        <p class="footer-msg">"Every stroke of the pen is a beat of the heart."</p>
+        <a href="{{ url_for('home') }}" class="btn-checkout-return">
+            <i class="fas fa-chevron-left"></i> Back to Collection
+        </a>
+
+        <div class="secure-badges">
+            <div class="badge-item"><i class="fas fa-shield-alt"></i> SSL Encrypted</div>
+            <div class="badge-item"><i class="fab fa-whatsapp"></i> Verified Artist</div>
+            <div class="badge-item"><i class="fas fa-shipping-fast"></i> Pan India Delivery</div>
+        </div>
+        <p style="color: #ccc; font-size: 0.75rem; margin-top: 30px;">© 2026 HeartScript Exclusive Artistry. Crafted for Love.</p>
+    </footer>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script>
+        let map, marker, watchId = null;
+        let mode = 'self';
+        let accuracyCircle = null;
+        let searchTimeout = null;
+
+        const PRODUCT = {
+            id: {{ product.id | tojson }},
+            name: {{ product.name | tojson }},
+            price: {{ product.price | tojson }}
+        };
+
+        function initMap() {
+            const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; OpenStreetMap contributors'
+            });
+
+            const defaultPos = [26.8467, 80.9462]; // Lucknow Default
+            map = L.map('map-canvas', {
+                zoomControl: false,
+                layers: [osmLayer],
+                tap: false,
+                scrollWheelZoom: false
+            }).setView(defaultPos, 14);
+
+            L.control.zoom({ position: 'topright' }).addTo(map);
+
+            const heartIcon = L.divIcon({
+                html: '<i class="fas fa-heart" style="color:#ff4d6d; font-size:32px; text-shadow: 0 0 15px white;"></i>',
+                className: 'custom-heart-marker',
+                iconSize: [32, 32],
+                iconAnchor: [16, 16]
+            });
+
+            marker = L.marker(defaultPos, { draggable: true, icon: heartIcon }).addTo(map);
+            accuracyCircle = L.circle(defaultPos, { radius: 0, fillOpacity: 0.1, color: '#ff4d6d', stroke: false }).addTo(map);
+
+            marker.on('dragend', () => {
+                const pos = marker.getLatLng();
+                reverseGeocode(pos.lat, pos.lng);
+            });
+
+            map.on('click', (e) => {
+                marker.setLatLng(e.latlng);
+                reverseGeocode(e.latlng.lat, e.latlng.lng);
+            });
+        }
+
+        function toggleGPS() {
+            const btn = document.getElementById('gps-btn');
+            const icon = btn.querySelector('i');
+
+            if (!navigator.geolocation) {
+                Swal.fire('Error', 'Your browser does not support GPS', 'error');
+                return;
+            }
+
+            icon.className = "fas fa-spinner fa-spin";
+            btn.style.background = "#ff4d6d";
+            btn.style.color = "white";
+
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const { latitude, longitude, accuracy } = position.coords;
+                    const pos = [latitude, longitude];
+
+                    map.flyTo(pos, 18, { duration: 2 });
+                    marker.setLatLng(pos);
+                    accuracyCircle.setLatLng(pos).setRadius(accuracy);
+                    reverseGeocode(latitude, longitude);
+
+                    icon.className = "fas fa-location-arrow";
+                    btn.style.background = "#fff5f6";
+                    btn.style.color = "var(--romantic-red)";
+
+                    if (accuracy > 100) {
+                        Swal.fire({
+                            icon: 'info',
+                            title: 'Location Found',
+                            text: 'Accuracy is a bit low. Please drag the heart to your exact door.',
+                            toast: true,
+                            position: 'top-end',
+                            timer: 4000,
+                            showConfirmButton: false
+                        });
+                    }
+                },
+                (error) => {
+                    icon.className = "fas fa-location-arrow";
+                    btn.style.background = "#fff5f6";
+                    btn.style.color = "var(--romantic-red)";
+                    let msg = "Please enable location permissions in your browser.";
+                    if (error.code === 3) msg = "Connection timeout. Please try again.";
+                    Swal.fire('GPS Error', msg, 'warning');
+                },
+                {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 0
+                }
+            );
+        }
+
+        async function handleSearch(val) {
+            const resultsDiv = document.getElementById('search-results');
+            if (val.length < 3) { resultsDiv.style.display = 'none'; return; }
+            try {
+                const res = await fetch(`https://photon.komoot.io/api/?q=${encodeURIComponent(val)}&limit=5`);
+                if (!res.ok) throw new Error('Search request failed');
+                const data = await res.json();
+                if (data.features && data.features.length > 0) {
+                    resultsDiv.innerHTML = '';
+                    data.features.forEach(f => {
+                        const name = [f.properties.name, f.properties.city, f.properties.state].filter(Boolean).join(', ');
+                        const item = document.createElement('div');
+                        item.className = 'result-item';
+                        item.innerHTML = `<i class="fas fa-map-marker-alt" style="color: #ff4d6d;"></i> <span></span>`;
+                        item.querySelector('span').textContent = name;
+                        item.onclick = () => selectLocation(f.geometry.coordinates[1], f.geometry.coordinates[0], name);
+                        resultsDiv.appendChild(item);
+                    });
+                    resultsDiv.style.display = 'block';
+                } else {
+                    resultsDiv.style.display = 'none';
+                }
+            } catch (e) {
+                console.error("Search API Error", e);
+                resultsDiv.style.display = 'none';
+            }
+        }
+
+        function selectLocation(lat, lng, name) {
+            const pos = [lat, lng];
+            map.flyTo(pos, 18);
+            marker.setLatLng(pos);
+            const addrField = document.getElementById('address');
+            if (addrField) addrField.value = name;
+            document.getElementById('search-results').style.display = 'none';
+            reverseGeocode(lat, lng);
+        }
+
+        async function reverseGeocode(lat, lng) {
+            try {
+                const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lng)}&zoom=18&addressdetails=1`;
+                const res = await fetch(url, { headers: { "Accept": "application/json" } });
+                if (!res.ok) throw new Error(`Geocoding failed: ${res.status}`);
+                const data = await res.json();
+                if (!data) return;
+
+                const addressField = document.getElementById("address");
+                const pincodeField = document.getElementById("pincode");
+
+                if (addressField && data.display_name) {
+                    addressField.value = data.display_name;
+                }
+                if (pincodeField && data.address && data.address.postcode) {
+                    pincodeField.value = data.address.postcode;
+                }
+            } catch (e) {
+                console.warn("Geocoding failed", e);
+            }
+        }
+
+        function changeMode(m) {
+            mode = m;
+            document.getElementById('mode-self').classList.toggle('active', m === 'self');
+            document.getElementById('mode-gift').classList.toggle('active', m === 'gift');
+            document.getElementById('form-heading').innerText = (m === 'gift') ? 'Recipient Details 🎁' : 'Delivery Details';
+        }
+
+        async function submitOrderForm(event) {
+            event.preventDefault();
+
+            const btn = document.querySelector('.btn-complete');
+            if (btn.disabled) return;
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Securing Order...';
+
+            try {
+                const getVal = (id) => {
+                    const el = document.getElementById(id);
+                    return el ? el.value.trim() : "";
+                };
+
+                const orderData = {
+                    name: getVal('name'),
+                    phone: getVal('phone'),
+                    house_no: getVal('house'),
+                    address: getVal('address'),
+                    pincode: getVal('pincode'),
+                    custom_details: getVal('note'),
+                    product_id: PRODUCT.id,
+                    items: PRODUCT.name,
+                    quantity: 1,
+                    delivery_mode: mode
+                };
+
+                if (!orderData.name) {
+                    throw new Error("Please enter recipient name.");
+                }
+
+                const cleanPhone = orderData.phone.replace(/\D/g, '');
+                if (!/^[6-9]\d{9}$/.test(cleanPhone)) {
+                    throw new Error("Please enter a valid 10-digit WhatsApp number.");
+                }
+                orderData.phone = cleanPhone;
+
+                if (!orderData.house_no) {
+                    throw new Error("Please enter house / flat / street details.");
+                }
+
+                if (!orderData.address) {
+                    throw new Error("Please select or enter your delivery address.");
+                }
+
+                if (!/^[1-9]\d{5}$/.test(orderData.pincode)) {
+                    throw new Error("Please enter a valid 6-digit pincode.");
+                }
+
+                // --------- ADDED CSRF TOKEN FETCH HERE ---------
+                const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+                const response = await fetch("/submit_order", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Accept": "application/json",
+                        "X-Requested-With": "XMLHttpRequest",
+                        "X-CSRFToken": csrfToken // --------- ADDED CSRF HEADER HERE ---------
+                    },
+                    body: JSON.stringify(orderData)
+                });
+
+                const contentType = response.headers.get("content-type") || "";
+                let result;
+
+                if (contentType.includes("application/json")) {
+                    result = await response.json();
+                } else {
+                    const text = await response.text();
+                    console.error("Server returned non-JSON response:", text);
+                    throw new Error(`Server returned an invalid response (HTTP ${response.status}). Please try again shortly.`);
+                }
+
+                if (response.ok && result.success) {
+                    await Swal.fire({
+                        icon: "success",
+                        title: "Order Request Received ❤️",
+                        text: result.message || "Your order has been submitted successfully.",
+                        confirmButtonColor: "#ff4d6d",
+                        confirmButtonText: "Continue"
+                    });
+
+                    if (!result.order_id) {
+                        throw new Error("Order created but order ID was not returned by server.");
+                    }
+
+                    window.location.href = "/thank_you/" + result.order_id;
+                    return;
+                }
+
+                throw new Error(result.message || result.error || `Order submission failed (HTTP ${response.status}).`);
+
+            } catch (err) {
+                console.error("ORDER SUBMISSION ERROR:", err);
+                Swal.fire({
+                    icon: "error",
+                    title: "Submission Error",
+                    text: err.message || "Something went wrong while submitting your order.",
+                    confirmButtonColor: "#ff4d6d"
+                });
+                btn.disabled = false;
+                btn.innerHTML = 'Confirm Order Request <i class="fas fa-arrow-right"></i>';
+            }
+        }
+
+        window.onload = function() {
+            initMap();
+
+            document.getElementById('checkout-form').addEventListener('submit', submitOrderForm);
+
+            document.getElementById('map-search-input').addEventListener('input', function () {
+                clearTimeout(searchTimeout);
+                const value = this.value.trim();
+                searchTimeout = setTimeout(() => handleSearch(value), 500);
+            });
+        };
+
+        document.addEventListener('click', (e) => {
+            const results = document.getElementById('search-results');
+            if (results && !e.target.closest('.search-container')) {
+                results.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="robots"
+        content="noindex, nofollow"
+    >
+
+    <title>Admin Access | HeartScript Artistry</title>
+
+    <!-- Font Awesome -->
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    >
+
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&family=Great+Vibes&display=swap"
+        rel="stylesheet"
+    >
+
+    <style>
+        /* =========================================================
+           ROOT
+        ========================================================= */
+
+        :root {
+            --primary: #ff416c;
+            --secondary: #ff4b2b;
+            --dark: #2c3e50;
+
+            --text: #333;
+            --muted: #888;
+
+            --border: #eeeeee;
+            --danger-bg: #fff5f5;
+            --danger-border: #fed7d7;
+            --danger-text: #e74c3c;
+
+            --card-shadow:
+                0 20px 40px rgba(0, 0, 0, 0.10);
+
+            --button-shadow:
+                0 10px 20px rgba(255, 65, 108, 0.20);
+        }
+
+
+        /* =========================================================
+           RESET
+        ========================================================= */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+
+        body {
+            font-family: 'Poppins', sans-serif;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #fdfcfb 0%,
+                    #e2d1c3 100%
+                );
+
+            min-height: 100vh;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            padding: 25px;
+
+            color: var(--text);
+
+            overflow-x: hidden;
+        }
+
+
+        /* =========================================================
+           LOGIN CARD
+        ========================================================= */
+
+        .login-card {
+            width: 100%;
+            max-width: 420px;
+
+            background: #ffffff;
+
+            padding: 48px 40px;
+
+            border-radius: 22px;
+
+            box-shadow: var(--card-shadow);
+
+            text-align: center;
+
+            position: relative;
+
+            border-top: 5px solid var(--primary);
+
+            animation: cardEnter 0.55s ease forwards;
+        }
+
+
+        @keyframes cardEnter {
+            from {
+                opacity: 0;
+                transform: translateY(25px) scale(0.98);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+
+        /* =========================================================
+           LOGO
+        ========================================================= */
+
+        .logo-text {
+            display: block;
+
+            font-family: 'Great Vibes', cursive;
+
+            font-size: 48px;
+
+            line-height: 1;
+
+            color: var(--primary);
+
+            margin-bottom: 12px;
+
+            user-select: none;
+        }
+
+
+        /* =========================================================
+           HEADING
+        ========================================================= */
+
+        h2 {
+            color: var(--dark);
+
+            margin-bottom: 30px;
+
+            font-weight: 600;
+
+            letter-spacing: 1px;
+
+            text-transform: uppercase;
+
+            font-size: 1.15rem;
+        }
+
+
+        /* =========================================================
+           FLASH MESSAGE
+        ========================================================= */
+
+        .alert {
+            background: var(--danger-bg);
+
+            color: var(--danger-text);
+
+            padding: 12px 14px;
+
+            border-radius: 10px;
+
+            margin-bottom: 20px;
+
+            font-size: 13px;
+
+            border: 1px solid var(--danger-border);
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            gap: 8px;
+
+            line-height: 1.5;
+        }
+
+
+        /* =========================================================
+           FORM
+        ========================================================= */
+
+        .login-form {
+            width: 100%;
+
+            text-align: left;
+        }
+
+
+        /* =========================================================
+           INPUT GROUP
+        ========================================================= */
+
+        .input-group {
+            position: relative;
+
+            margin-bottom: 22px;
+        }
+
+
+        .input-group .input-icon {
+            position: absolute;
+
+            left: 15px;
+            top: 50%;
+
+            transform: translateY(-50%);
+
+            color: #aaa;
+
+            font-size: 15px;
+
+            pointer-events: none;
+
+            z-index: 2;
+        }
+
+
+        /* =========================================================
+           INPUT
+        ========================================================= */
+
+        .password-input {
+            width: 100%;
+
+            padding: 15px 48px 15px 45px;
+
+            border: 2px solid var(--border);
+
+            border-radius: 12px;
+
+            background: #fff;
+
+            color: #222;
+
+            box-sizing: border-box;
+
+            font-family: 'Poppins', sans-serif;
+
+            font-size: 15px;
+
+            transition:
+                border-color 0.25s ease,
+                box-shadow 0.25s ease,
+                background 0.25s ease;
+
+            outline: none;
+        }
+
+
+        .password-input::placeholder {
+            color: #aaa;
+        }
+
+
+        .password-input:hover {
+            border-color: #ddd;
+        }
+
+
+        .password-input:focus {
+            border-color: var(--primary);
+
+            box-shadow:
+                0 0 0 4px rgba(255, 65, 108, 0.08);
+        }
+
+
+        /* =========================================================
+           PASSWORD TOGGLE
+        ========================================================= */
+
+        .toggle-password {
+            position: absolute;
+
+            right: 15px;
+            top: 50%;
+
+            transform: translateY(-50%);
+
+            color: #888;
+
+            cursor: pointer;
+
+            font-size: 15px;
+
+            transition: color 0.2s ease;
+
+            z-index: 3;
+        }
+
+
+        .toggle-password:hover {
+            color: var(--primary);
+        }
+
+
+        .toggle-password:focus {
+            outline: none;
+
+            color: var(--primary);
+        }
+
+
+        /* =========================================================
+           SUBMIT BUTTON
+        ========================================================= */
+
+        .login-button {
+            width: 100%;
+
+            padding: 15px;
+
+            background:
+                linear-gradient(
+                    to right,
+                    var(--primary),
+                    var(--secondary)
+                );
+
+            color: white;
+
+            border: none;
+
+            border-radius: 12px;
+
+            cursor: pointer;
+
+            font-family: 'Poppins', sans-serif;
+
+            font-size: 15px;
+
+            font-weight: 600;
+
+            letter-spacing: 0.2px;
+
+            transition:
+                transform 0.25s ease,
+                box-shadow 0.25s ease,
+                opacity 0.25s ease;
+
+            box-shadow: var(--button-shadow);
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            gap: 8px;
+        }
+
+
+        .login-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+
+            box-shadow:
+                0 15px 25px rgba(255, 65, 108, 0.30);
+        }
+
+
+        .login-button:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+
+        .login-button:disabled {
+            cursor: not-allowed;
+
+            opacity: 0.7;
+        }
+
+
+        /* =========================================================
+           BACK LINK
+        ========================================================= */
+
+        .back-link {
+            margin-top: 25px;
+
+            display: inline-flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            gap: 7px;
+
+            color: var(--muted);
+
+            text-decoration: none;
+
+            font-size: 13px;
+
+            transition:
+                color 0.25s ease,
+                transform 0.25s ease;
+        }
+
+
+        .back-link:hover {
+            color: var(--primary);
+
+            transform: translateX(-2px);
+        }
+
+
+        /* =========================================================
+           FLOATING HOME BUTTON
+        ========================================================= */
+
+        .floating-home-btn {
+            position: fixed;
+
+            bottom: 30px;
+            right: 30px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--primary),
+                    var(--secondary)
+                );
+
+            color: white;
+
+            padding: 12px 20px;
+
+            border-radius: 50px;
+
+            text-decoration: none;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 8px;
+
+            box-shadow:
+                0 10px 20px rgba(255, 65, 108, 0.30);
+
+            z-index: 1000;
+
+            transition:
+                transform 0.3s ease,
+                box-shadow 0.3s ease;
+
+            font-family: 'Poppins', sans-serif;
+
+            font-weight: 600;
+
+            font-size: 13px;
+
+            border:
+                2px solid rgba(255, 255, 255, 0.2);
+        }
+
+
+        .floating-home-btn:hover {
+            transform:
+                translateY(-5px) scale(1.05);
+
+            box-shadow:
+                0 15px 25px rgba(255, 65, 108, 0.50);
+
+            color: white;
+        }
+
+
+        .floating-home-btn i {
+            font-size: 1rem;
+        }
+
+
+        /* =========================================================
+           LOADING SPINNER
+        ========================================================= */
+
+        .spinner {
+            width: 16px;
+            height: 16px;
+
+            border:
+                2px solid rgba(255,255,255,0.45);
+
+            border-top-color: #fff;
+
+            border-radius: 50%;
+
+            animation:
+                spin 0.7s linear infinite;
+        }
+
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+
+        /* =========================================================
+           MOBILE
+        ========================================================= */
+
+        @media (max-width: 600px) {
+
+            body {
+                padding: 18px;
+            }
+
+
+            .login-card {
+                max-width: 100%;
+
+                padding: 40px 25px;
+
+                border-radius: 18px;
+            }
+
+
+            .logo-text {
+                font-size: 43px;
+            }
+
+
+            h2 {
+                font-size: 1rem;
+
+                margin-bottom: 25px;
+            }
+
+
+            .password-input {
+                padding-top: 14px;
+                padding-bottom: 14px;
+            }
+
+
+            .login-button {
+                padding: 14px;
+            }
+
+
+            .floating-home-btn {
+                width: 48px;
+                height: 48px;
+
+                padding: 0;
+
+                bottom: 20px;
+                right: 20px;
+
+                justify-content: center;
+
+                border-radius: 50%;
+            }
+
+
+            .floating-home-btn span {
+                display: none;
+            }
+
+
+            .floating-home-btn i {
+                font-size: 1rem;
+            }
+        }
+
+
+        /* =========================================================
+           ACCESSIBILITY
+        ========================================================= */
+
+        @media (prefers-reduced-motion: reduce) {
+
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                scroll-behavior: auto !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+
+
+<body>
+
+    <!-- =========================================================
+         LOGIN CARD
+    ========================================================= -->
+
+    <main class="login-card">
+
+        <!-- Logo -->
+        <span class="logo-text">
+            HeartScript
+        </span>
+
+
+        <!-- Heading -->
+        <h2>
+            Admin Control
+        </h2>
+
+
+        <!-- =====================================================
+             FLASH MESSAGES
+        ===================================================== -->
+
+        {% with messages = get_flashed_messages() %}
+
+            {% if messages %}
+
+                {% for message in messages %}
+
+                    <div
+                        class="alert"
+                        role="alert"
+                        aria-live="polite"
+                    >
+                        <i class="fas fa-exclamation-circle"></i>
+
+                        <span>
+                            {{ message }}
+                        </span>
+                    </div>
+
+                {% endfor %}
+
+            {% endif %}
+
+        {% endwith %}
+
+
+        <!-- =====================================================
+             ADMIN LOGIN FORM
+        ===================================================== -->
+
+        <form
+            method="POST"
+            action="{{ url_for('admin_login') }}"
+            class="login-form"
+            id="adminLoginForm"
+        >
+
+            <!-- IMPORTANT:
+                 CSRF TOKEN
+            -->
+
+            <input
+                type="hidden"
+                name="csrf_token"
+                value="{{ csrf_token() }}"
+            >
+
+
+            <!-- Password -->
+            <div class="input-group">
+
+                <i
+                    class="fas fa-lock input-icon"
+                    aria-hidden="true"
+                ></i>
+
+
+                <input
+                    type="password"
+                    name="password"
+                    id="adminPass"
+                    class="password-input"
+                    placeholder="Security Password"
+                    required
+                    autofocus
+                    autocomplete="current-password"
+                    minlength="1"
+                    aria-label="Admin password"
+                >
+
+
+                <button
+                    type="button"
+                    class="toggle-password"
+                    id="togglePassword"
+                    aria-label="Show password"
+                    title="Show password"
+                >
+                    <i
+                        class="fas fa-eye"
+                        id="eyeIcon"
+                        aria-hidden="true"
+                    ></i>
+                </button>
+
+            </div>
+
+
+            <!-- Submit -->
+            <button
+                type="submit"
+                class="login-button"
+                id="loginButton"
+            >
+                <i
+                    class="fas fa-shield-alt"
+                    id="loginIcon"
+                    aria-hidden="true"
+                ></i>
+
+                <span id="loginButtonText">
+                    Verify & Enter Dashboard
+                </span>
+            </button>
+
+        </form>
+
+
+        <!-- Back to Home -->
+        <a
+            href="{{ url_for('home') }}"
+            class="back-link"
+        >
+            <i class="fas fa-arrow-left"></i>
+
+            Return to Shop
+        </a>
+
+    </main>
+
+
+    <!-- =========================================================
+         FLOATING HOME BUTTON
+    ========================================================= -->
+
+    <a
+        href="{{ url_for('home') }}"
+        class="floating-home-btn"
+        title="Go to Home"
+        aria-label="Go to Home"
+    >
+
+        <i
+            class="fas fa-home"
+            aria-hidden="true"
+        ></i>
+
+        <span>
+            Home
+        </span>
+
+    </a>
+
+
+    <!-- =========================================================
+         JAVASCRIPT
+    ========================================================= -->
+
+    <script>
+
+        /* =====================================================
+           PASSWORD SHOW / HIDE
+        ===================================================== */
+
+        const passInput =
+            document.getElementById('adminPass');
+
+        const togglePassword =
+            document.getElementById('togglePassword');
+
+        const eyeIcon =
+            document.getElementById('eyeIcon');
+
+
+        if (
+            passInput &&
+            togglePassword &&
+            eyeIcon
+        ) {
+
+            togglePassword.addEventListener(
+                'click',
+                function () {
+
+                    const isPassword =
+                        passInput.type === 'password';
+
+
+                    if (isPassword) {
+
+                        passInput.type = 'text';
+
+                        eyeIcon.classList.remove(
+                            'fa-eye'
+                        );
+
+                        eyeIcon.classList.add(
+                            'fa-eye-slash'
+                        );
+
+                        togglePassword.setAttribute(
+                            'aria-label',
+                            'Hide password'
+                        );
+
+                        togglePassword.setAttribute(
+                            'title',
+                            'Hide password'
+                        );
+
+                    } else {
+
+                        passInput.type = 'password';
+
+                        eyeIcon.classList.remove(
+                            'fa-eye-slash'
+                        );
+
+                        eyeIcon.classList.add(
+                            'fa-eye'
+                        );
+
+                        togglePassword.setAttribute(
+                            'aria-label',
+                            'Show password'
+                        );
+
+                        togglePassword.setAttribute(
+                            'title',
+                            'Show password'
+                        );
+                    }
+
+                }
+            );
+
+        }
+
+
+        /* =====================================================
+           LOGIN SUBMIT LOADING STATE
+        ===================================================== */
+
+        const loginForm =
+            document.getElementById('adminLoginForm');
+
+        const loginButton =
+            document.getElementById('loginButton');
+
+        const loginIcon =
+            document.getElementById('loginIcon');
+
+        const loginButtonText =
+            document.getElementById('loginButtonText');
+
+
+        if (loginForm) {
+
+            loginForm.addEventListener(
+                'submit',
+                function () {
+
+                    if (
+                        !loginButton ||
+                        !loginButtonText ||
+                        !loginIcon
+                    ) {
+                        return;
+                    }
+
+
+                    /*
+                     * Prevent accidental double-click
+                     */
+
+                    loginButton.disabled = true;
+
+
+                    /*
+                     * Loading icon
+                     */
+
+                    loginIcon.className =
+                        'spinner';
+
+
+                    /*
+                     * Loading text
+                     */
+
+                    loginButtonText.textContent =
+                        'Verifying...';
+
+                }
+            );
+
+        }
+
+    </script>
+
+</body>
+</html>

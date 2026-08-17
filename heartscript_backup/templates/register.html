@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register | HeartScript</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+
+    <style>
+        :root {
+            --primary-pink: #ff4d6d;
+            --soft-pink: #ff758f;
+            --light-bg: #f8f9fa;
+            --text-dark: #495057;
+            --premium-gold: #d4af37;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 0;
+            overflow-x: hidden;
+        }
+
+        .register-container {
+            background: white;
+            padding: 50px;
+            border-radius: 25px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.08);
+            max-width: 800px;
+            width: 95%;
+            position: relative;
+            border: 1px solid rgba(255, 77, 109, 0.1);
+        }
+
+        /* Brand Styling */
+        .brand-section {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .brand-name {
+            font-family: 'Dancing Script', cursive;
+            font-size: 3rem;
+            color: var(--primary-pink);
+            margin-bottom: 5px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.02);
+        }
+
+        .tagline {
+            color: #6c757d;
+            font-size: 0.95rem;
+            letter-spacing: 1px;
+        }
+
+        /* Section Dividers */
+        .section-divider {
+            border-bottom: 2px solid #fff0f3;
+            padding-bottom: 8px;
+            margin: 35px 0 20px;
+            color: var(--primary-pink);
+            font-weight: 600;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Form Controls */
+        .form-label {
+            font-weight: 500;
+            color: var(--text-dark);
+            font-size: 0.88rem;
+            margin-bottom: 8px;
+        }
+
+        .form-control {
+            border-radius: 12px;
+            padding: 12px 15px;
+            border: 1.5px solid #eee;
+            font-size: 0.92rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-pink);
+            box-shadow: 0 0 0 4px rgba(255, 77, 109, 0.1);
+            outline: none;
+        }
+
+        /* Buttons */
+        .btn-register {
+            background: linear-gradient(135deg, var(--primary-pink), var(--soft-pink));
+            border: none;
+            padding: 16px;
+            border-radius: 12px;
+            width: 100%;
+            font-weight: 600;
+            color: white;
+            margin-top: 30px;
+            font-size: 1.05rem;
+            letter-spacing: 0.5px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 8px 20px rgba(255, 77, 109, 0.25);
+        }
+
+        .btn-register:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(255, 77, 109, 0.35);
+            color: white;
+        }
+
+        /* Google Login Integration */
+        .social-auth {
+            margin-bottom: 30px;
+        }
+
+        .btn-google {
+            background-color: white;
+            color: #444;
+            border: 1.5px solid #e0e0e0;
+            padding: 14px;
+            border-radius: 12px;
+            width: 100%;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .btn-google:hover {
+            background-color: #fcfcfc;
+            border-color: #ccc;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .btn-google img {
+            width: 22px;
+        }
+
+        .or-divider {
+            text-align: center;
+            margin: 25px 0;
+            position: relative;
+            color: #adb5bd;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .or-divider::before, .or-divider::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            width: 38%;
+            height: 1px;
+            background: #eee;
+        }
+
+        .or-divider::before { left: 0; }
+        .or-divider::after { right: 0; }
+
+        /* Floating Home Button */
+        .floating-home-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, #ff416c, #ff4b2b);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 50px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 10px 20px rgba(255, 65, 108, 0.3);
+            z-index: 1000;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .floating-home-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 25px rgba(255, 65, 108, 0.5);
+            color: white;
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 25px;
+            font-size: 0.92rem;
+            color: #6c757d;
+        }
+
+        .login-link a {
+            color: var(--primary-pink);
+            text-decoration: none;
+            font-weight: 600;
+            margin-left: 5px;
+        }
+
+        /* Mobile Optimization */
+        @media (max-width: 768px) {
+            body { padding: 15px 0; }
+            .register-container {
+                padding: 30px 20px;
+                border-radius: 0;
+                width: 100%;
+            }
+            .brand-name { font-size: 2.4rem; }
+            .section-divider { font-size: 0.9rem; }
+            .floating-home-btn span { display: none; }
+            .floating-home-btn { padding: 15px; border-radius: 50%; }
+        }
+
+        /* Success/Error Alerts */
+        .alert {
+            border-radius: 12px;
+            border: none;
+            font-size: 0.88rem;
+            padding: 15px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="register-container">
+    <div class="brand-section">
+        <div class="brand-name">HeartScript</div>
+        <p class="tagline">Where Every Letter Tells a Story</p>
+    </div>
+
+    <div class="social-auth">
+        <button type="button" class="btn-google" onclick="handleGoogleRegister()">
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
+            Continue with Google
+        </button>
+        <div class="or-divider">Or use your email</div>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }} alert-dismissible fade show mb-4" role="alert">
+            <i class="fas fa-info-circle me-2"></i> {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <form action="{{ url_for('register') }}" method="POST" id="registrationForm">
+        
+        <!-- CSRF Protection Added Here -->
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+        <div class="section-divider">
+            <i class="fas fa-user-circle"></i> Personal Details
+        </div>
+        
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Full Name</label>
+                <input type="text" name="username" class="form-control" placeholder="e.g. Rudra Pratap" required>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Email Address</label>
+                <input type="email" name="email" id="regEmail" class="form-control" placeholder="name@example.com" required>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Phone Number</label>
+                <input type="tel" name="phone" class="form-control" placeholder="10-digit mobile" required>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">WhatsApp Number</label>
+                <input type="tel" name="whatsapp" class="form-control" placeholder="For customization updates" required>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Create Password</label>
+            <div class="input-group">
+                <input type="password" name="password" id="regPassword" class="form-control" placeholder="Minimum 6 characters" required minlength="6">
+                <button class="btn btn-outline-secondary" type="button" onclick="togglePass()" style="border-radius: 0 12px 12px 0; border-color: #eee;">
+                    <i class="fas fa-eye" id="eyeIcon"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="section-divider">
+            <i class="fas fa-map-marker-alt"></i> Shipping Address
+        </div>
+
+        <div class="row">
+            <div class="col-5 col-md-4 mb-3">
+                <label class="form-label">House/Flat No</label>
+                <input type="text" name="house_no" class="form-control" required>
+            </div>
+            <div class="col-7 col-md-8 mb-3">
+                <label class="form-label">Landmark</label>
+                <input type="text" name="landmark" class="form-control" placeholder="Nearby school, mall etc." required>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Area / Colony / Street</label>
+            <input type="text" name="area" class="form-control" placeholder="Complete street address" required>
+        </div>
+
+        <div class="row">
+            <div class="col-4 mb-3">
+                <label class="form-label">Pincode</label>
+                <input type="text" name="pincode" class="form-control" placeholder="6-digit" required pattern="[0-9]{6}">
+            </div>
+            <div class="col-4 mb-3">
+                <label class="form-label">City</label>
+                <input type="text" name="city" class="form-control" required>
+            </div>
+            <div class="col-4 mb-3">
+                <label class="form-label">State</label>
+                <input type="text" name="state" class="form-control" required>
+            </div>
+        </div>
+
+        <button type="submit" class="btn-register" id="submitBtn">
+            <i class="fas fa-heart me-2"></i> Create My Account
+        </button>
+    </form>
+
+    <div class="login-link">
+        Already a member? <a href="{{ url_for('user_login') }}">Login to HeartScript</a>
+    </div>
+</div>
+
+<a href="{{ url_for('home') }}" class="floating-home-btn">
+    <i class="fas fa-home"></i> <span>Home</span>
+</a>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    // ==========================================
+    // FIREBASE INITIALIZATION
+    // ==========================================
+    const firebaseConfig = {
+        apiKey: "AIzaSyBHpoAZUyg8ao-C-6viJCtPi6itsfTtys0",
+        authDomain: "heartscript25r.firebaseapp.com",
+        projectId: "heartscript25r",
+        appId: "1:345572532650:web:605ec4bdaf4fc746998bd3"
+    };
+    
+    firebase.initializeApp(firebaseConfig);
+
+    // ==========================================
+    // GOOGLE REGISTRATION / LOGIN
+    // ==========================================
+    function handleGoogleRegister() {
+        const googleBtn = document.querySelector('.btn-google');
+        const originalBtnText = googleBtn.innerHTML;
+
+        googleBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Connecting...';
+        googleBtn.style.opacity = '0.7';
+        googleBtn.style.pointerEvents = 'none';
+
+        const provider = new firebase.auth.GoogleAuthProvider();
+
+        firebase.auth().signInWithPopup(provider)
+        .then((result) => {
+            return result.user.getIdToken();
+        })
+        .then((idToken) => {
+            // Get CSRF token generated by Flask-WTF
+            const csrfToken = document.querySelector('input[name="csrf_token"]').value;
+
+            // Send Firebase token + CSRF token to Flask API
+            return fetch('/api/firebase-login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                },
+                body: JSON.stringify({ idToken: idToken })
+            });
+        })
+        .then(async (response) => {
+            const data = await response.json();
+
+            if (data.status === 'success') {
+                window.location.href = data.redirect;
+            } else {
+                alert("Registration/Login Failed: " + (data.message || "Unknown error"));
+                resetGoogleButton(googleBtn, originalBtnText);
+            }
+        })
+        .catch((error) => {
+            console.error("Google Registration Error:", error);
+            alert("Google connection failed. Please try again.");
+            resetGoogleButton(googleBtn, originalBtnText);
+        });
+    }
+
+    // ==========================================
+    // RESET GOOGLE BUTTON
+    // ==========================================
+    function resetGoogleButton(button, originalText) {
+        button.innerHTML = originalText;
+        button.style.opacity = '1';
+        button.style.pointerEvents = 'auto';
+    }
+
+    // ==========================================
+    // PASSWORD SHOW / HIDE
+    // ==========================================
+    function togglePass() {
+        const passInput = document.getElementById('regPassword');
+        const icon = document.getElementById('eyeIcon');
+
+        if (passInput.type === 'password') {
+            passInput.type = 'text';
+            icon.classList.replace('fa-eye', 'fa-eye-slash');
+        } else {
+            passInput.type = 'password';
+            icon.classList.replace('fa-eye-slash', 'fa-eye');
+        }
+    }
+
+    // ==========================================
+    // REGISTRATION FORM LOADING STATE
+    // ==========================================
+    document.getElementById('registrationForm').addEventListener('submit', function () {
+        const btn = document.getElementById('submitBtn');
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Processing...';
+        btn.style.opacity = '0.7';
+        btn.style.pointerEvents = 'none';
+    });
+</script>
+
+</body>
+</html>

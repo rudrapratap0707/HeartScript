@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>HeartScript Admin | Control Tower</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #ff416c;
+            --primary-dark: #e0395f;
+            --secondary: #ff4b2b;
+            --dark: #1a1a1a;
+            --sidebar-bg: #111111;
+            --light-bg: #f8f9fa;
+            --glass: rgba(255, 255, 255, 0.95);
+            --success: #2ecc71;
+            --warning: #f1c40f;
+            --danger: #e74c3c;
+            --info: #3498db;
+            --shadow: 0 10px 30px rgba(0,0,0,0.08);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --sidebar-width: 280px;
+            --sidebar-width-collapsed: 85px;
+        }
+
+        * { box-sizing: border-box; outline: none; scroll-behavior: smooth; }
+
+        html, body { max-width: 100%; overflow-x: hidden; }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--light-bg);
+            margin: 0;
+            display: flex;
+            min-height: 100vh;
+            color: #333;
+        }
+
+        /* --- SIDEBAR NAVIGATION --- */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--sidebar-bg);
+            color: white;
+            height: 100vh;
+            position: fixed;
+            padding: 30px 20px;
+            z-index: 1000;
+            transition: var(--transition);
+            overflow-y: auto;
+            box-shadow: 10px 0 30px rgba(0,0,0,0.2);
+        }
+
+        .sidebar-brand {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            color: var(--primary);
+            text-align: center;
+            margin-bottom: 50px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            letter-spacing: 1px;
+        }
+
+        .nav-group-label {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #555;
+            margin: 20px 0 10px 10px;
+            font-weight: 700;
+        }
+
+        .sidebar nav a {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: #999;
+            padding: 14px 18px;
+            text-decoration: none;
+            margin-bottom: 8px;
+            border-radius: 12px;
+            transition: var(--transition);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .sidebar nav a i { font-size: 1.1rem; width: 25px; text-align: center; flex-shrink: 0; }
+
+        .sidebar nav a:hover {
+            background: rgba(255, 65, 108, 0.1);
+            color: var(--primary);
+            transform: translateX(5px);
+        }
+
+        .sidebar nav a.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 10px 20px rgba(255, 65, 108, 0.3);
+        }
+
+        .logout-btn {
+            margin-top: 50px;
+            background: rgba(231, 76, 60, 0.1) !important;
+            color: var(--danger) !important;
+        }
+        .logout-btn:hover { background: var(--danger) !important; color: white !important; }
+
+        /* --- MAIN LAYOUT --- */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 40px;
+            width: calc(100% - var(--sidebar-width));
+            max-width: 100%;
+            transition: var(--transition);
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            gap: 20px;
+            flex-wrap: wrap;
+            animation: fadeInDown 0.8s;
+        }
+
+        .page-title h1 { font-family: 'Playfair Display', serif; margin: 0; font-size: 2.2rem; background: linear-gradient(45deg, var(--dark), var(--primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .page-title p { color: #888; margin-top: 5px; font-weight: 300; }
+
+        /* --- SEARCH BAR --- */
+        .search-container {
+            position: relative;
+            margin-bottom: 30px;
+            max-width: 500px;
+            width: 100%;
+        }
+        .search-container i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #aaa;
+        }
+        .search-input {
+            width: 100%;
+            padding: 15px 15px 15px 45px;
+            border-radius: 15px;
+            border: 1px solid #ddd;
+            background: white;
+            font-size: 0.9rem;
+            box-shadow: var(--shadow);
+        }
+
+        /* --- DASHBOARD STATS --- */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            border: 1px solid rgba(0,0,0,0.02);
+            transition: var(--transition);
+            min-width: 0;
+        }
+        .stat-card:hover { transform: translateY(-5px); }
+
+        .stat-icon {
+            width: 60px; height: 60px;
+            border-radius: 15px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .stat-info { min-width: 0; }
+        .stat-info h3 { margin: 0; font-size: 1.6rem; font-weight: 700; color: var(--dark); overflow-wrap: break-word; }
+        .stat-info p { margin: 0; color: #888; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 600; }
+
+        /* --- CONTENT CARDS --- */
+        .admin-card {
+            background: white;
+            padding: 35px;
+            border-radius: 24px;
+            box-shadow: var(--shadow);
+            margin-bottom: 40px;
+            border: 1px solid rgba(0,0,0,0.03);
+            min-width: 0;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #f5f5f5;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .card-header h2 { font-size: 1.4rem; font-weight: 600; display: flex; align-items: center; gap: 12px; margin: 0; }
+
+        /* --- FORM STYLING --- */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+        }
+
+        /* Image-upload row: 1 label col : 2 fields col on desktop, stacks on mobile */
+        .form-grid-media {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 25px;
+        }
+
+        .input-group { margin-bottom: 25px; }
+        .input-group label,
+        .file-label {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #444;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 14px 20px;
+            border: 1.5px solid #eee;
+            border-radius: 12px;
+            background: #fafafa;
+            font-family: inherit;
+            transition: var(--transition);
+            font-size: 0.9rem;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--primary);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(255, 65, 108, 0.1);
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 16px 30px;
+            border: none;
+            border-radius: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            width: 100%;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 10px 20px rgba(255, 65, 108, 0.2);
+        }
+        .btn-submit:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(255, 65, 108, 0.3); }
+
+        /* --- TABLE STYLING --- */
+        .table-container {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            border-radius: 18px;
+            margin-top: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 12px;
+            min-width: 1100px;
+        }
+
+        th {
+            padding: 15px 25px;
+            text-align: left;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #aaa;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        tbody tr {
+            background: white;
+            transition: var(--transition);
+        }
+
+        tbody tr:hover {
+            transform: scale(1.01) translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.05);
+        }
+
+        td {
+            padding: 20px 25px;
+            background: white;
+            border-top: 1px solid #f1f1f1;
+            border-bottom: 1px solid #f1f1f1;
+            vertical-align: middle;
+        }
+
+        td:first-child { border-left: 1px solid #f1f1f1; border-radius: 15px 0 0 15px; }
+        td:last-child { border-right: 1px solid #f1f1f1; border-radius: 0 15px 15px 0; }
+
+        /* Small hint that the orders table scrolls horizontally on narrow screens */
+        .scroll-hint {
+            display: none;
+            font-size: 0.7rem;
+            color: #aaa;
+            margin: -20px 0 15px;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* --- STATUS & BADGES --- */
+        .payment-status {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            gap: 8px;
+            cursor: pointer;
+            border: none;
+            transition: var(--transition);
+            white-space: nowrap;
+        }
+
+        .status-paid { background: #e9f9ef; color: var(--success); }
+        .status-unpaid { background: #fff0f3; color: var(--primary); }
+        .payment-status:hover { opacity: 0.8; transform: scale(1.05); }
+
+        .order-id { font-weight: 800; color: var(--dark); font-family: monospace; font-size: 1rem; }
+
+        .status-select {
+            font-size: 0.8rem;
+            padding: 10px;
+            border-radius: 10px;
+            border: 1px solid #eee;
+            background: #fdfdfd;
+            font-weight: 600;
+            color: #555;
+            cursor: pointer;
+        }
+
+        .action-tray { display: flex; gap: 12px; }
+        .icon-btn {
+            width: 40px; height: 40px;
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            text-decoration: none;
+            font-size: 1rem;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .btn-view { background: #eef2ff; color: #4f46e5; }
+        .btn-view:hover { background: #4f46e5; color: white; }
+        .btn-del { background: #fff0f3; color: var(--primary); }
+        .btn-del:hover { background: var(--primary); color: white; }
+
+        /* --- GALLERY + COLLECTIONS LAYOUT --- */
+        .gallery-collections-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            align-items: start;
+        }
+
+        /* --- PILLS & IMAGES (CATEGORIES) --- */
+        .category-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        .cat-pill {
+            display: inline-flex;
+            align-items: center;
+            background: #f8f9fa;
+            padding: 8px 18px;
+            border-radius: 50px;
+            margin: 5px;
+            font-size: 0.85rem;
+            gap: 12px;
+            border: 1px solid #eee;
+            transition: var(--transition);
+            max-width: 100%;
+        }
+        .cat-pill:hover { border-color: var(--primary); background: white; }
+        .cat-pill b { overflow-wrap: anywhere; }
+        .cat-pill a { color: #ccc; text-decoration: none; transition: 0.3s; flex-shrink: 0; }
+        .cat-pill a:hover { color: var(--danger); transform: rotate(90deg); }
+
+        .product-img {
+            width: 60px; height: 60px;
+            border-radius: 12px;
+            object-fit: cover;
+            border: 2px solid #fff;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        /* --- RESPONSIVE DESIGN --- */
+
+        /* Tablet: collapse sidebar to icons */
+        @media (max-width: 1200px) {
+            .sidebar { width: var(--sidebar-width-collapsed); padding: 30px 15px; }
+            .sidebar-brand, .nav-group-label, .sidebar nav a span { display: none; }
+            .sidebar nav a { justify-content: center; padding: 18px; }
+            .main-content { margin-left: var(--sidebar-width-collapsed); width: calc(100% - var(--sidebar-width-collapsed)); }
+            .form-grid, .form-grid-media { grid-template-columns: 1fr 1fr; }
+        }
+
+        /* Small tablet / large phone: stack gallery + collections, tighten spacing */
+        @media (max-width: 992px) {
+            .gallery-collections-grid { grid-template-columns: 1fr; }
+            .main-content { padding: 30px 20px; }
+        }
+
+        /* Mobile */
+        @media (max-width: 768px) {
+            .main-content { padding: 22px 14px; }
+            .admin-card { padding: 22px 18px; border-radius: 18px; }
+            .stats-grid { grid-template-columns: 1fr 1fr; gap: 15px; }
+            .stat-card { padding: 18px; gap: 14px; flex-wrap: wrap; }
+            .stat-icon { width: 48px; height: 48px; font-size: 1.2rem; }
+            .stat-info h3 { font-size: 1.25rem; }
+            .form-grid, .form-grid-media { grid-template-columns: 1fr; gap: 15px; }
+            .page-header { flex-direction: column; align-items: flex-start; gap: 15px; }
+            .page-title h1 { font-size: 1.6rem; }
+            .card-header { flex-direction: column; align-items: flex-start; }
+            .scroll-hint { display: flex; }
+            .btn-submit { width: 100%; min-width: 0 !important; }
+        }
+
+        /* Very small phones */
+        @media (max-width: 480px) {
+            .sidebar { width: 60px; padding: 20px 8px; }
+            .sidebar nav a { padding: 14px; }
+            .main-content { margin-left: 60px; width: calc(100% - 60px); }
+            .stats-grid { grid-template-columns: 1fr; }
+            .user-profile > div { padding: 8px 12px; gap: 10px; }
+            .user-profile b { font-size: 0.8rem; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="sidebar">
+        <div class="sidebar-brand">HeartScript</div>
+        <nav>
+            <div class="nav-group-label">Core</div>
+            <a href="/admin" class="active"><i class="fas fa-th-large"></i> <span>Dashboard</span></a>
+            <a href="/"><i class="fas fa-eye"></i> <span>View Storefront</span></a>
+
+            <div class="nav-group-label">Management</div>
+            <a href="#orders-section"><i class="fas fa-shopping-cart"></i> <span>Order Queue</span></a>
+            <a href="#products-section"><i class="fas fa-box-open"></i> <span>Inventory</span></a>
+            <a href="#categories-section"><i class="fas fa-tags"></i> <span>Categories</span></a>
+
+            <div class="nav-group-label">System</div>
+            <a href="/logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i> <span>Secure Logout</span></a>
+        </nav>
+    </div>
+
+    <div class="main-content">
+
+        <div class="page-header">
+            <div class="page-title">
+                <h1>Command Center</h1>
+                <p>Monitor transactions and curate your artistic collection.</p>
+            </div>
+            <div class="user-profile">
+                <div style="background: white; padding: 10px 20px; border-radius: 15px; box-shadow: var(--shadow); display: flex; align-items: center; gap: 15px;">
+                    <div style="text-align: right;">
+                        <b style="display:block; font-size: 0.9rem;">Administrator</b>
+                        <span style="color:var(--success); font-size: 0.7rem; font-weight: 700;"><i class="fas fa-circle" style="font-size: 0.5rem;"></i> ONLINE SESSION</span>
+                    </div>
+                    <div style="width: 40px; height: 40px; background: var(--primary); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white;">
+                        <i class="fas fa-user-shield"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon" style="background: #eef2ff; color: #4f46e5;"><i class="fas fa-indian-rupee-sign"></i></div>
+                <div class="stat-info">
+                    <p>Gross Revenue</p>
+                    <h3>₹{{ (total_revenue | float) if total_revenue else '0.00' }}</h3>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background: #fff7ed; color: #f97316;"><i class="fas fa-spinner fa-spin"></i></div>
+                <div class="stat-info">
+                    <p>Pending Orders</p>
+                    <h3>{{ orders|selectattr('status', 'equalto', 'pending')|list|length }}</h3>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background: #f0fdf4; color: #22c55e;"><i class="fas fa-shield-check"></i></div>
+                <div class="stat-info">
+                    <p>Verified Payments</p>
+                    <h3>{{ orders|selectattr('payment_confirmed', 'defined')|selectattr('payment_confirmed', 'equalto', True)|list|length if orders else 0 }}</h3>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background: #fdf2f2; color: #ef4444;"><i class="fas fa-heart"></i></div>
+                <div class="stat-info">
+                    <p>Total Fans</p>
+                    <h3>{{ orders|map(attribute='phone')|unique|list|length }}</h3>
+                </div>
+            </div>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="animate__animated animate__fadeInRight" style="padding:18px; background:white; border-left:5px solid var(--primary); margin-bottom:25px; border-radius:12px; box-shadow:var(--shadow); display: flex; align-items: center; justify-content: space-between; gap: 15px; flex-wrap: wrap;">
+                        <span><i class="fas fa-bell" style="color:var(--primary); margin-right:12px;"></i> {{ message }}</span>
+                        <i class="fas fa-times" style="cursor:pointer; color:#ccc;" onclick="this.parentElement.remove()"></i>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="search-container">
+            <i class="fas fa-search"></i>
+            <input type="text" id="orderSearch" class="search-input" placeholder="Search by Order ID, Customer Name or Status..." onkeyup="filterOrders()">
+        </div>
+
+        <div id="orders-section" class="admin-card animate__animated animate__fadeIn">
+            <div class="card-header">
+                <h2><i class="fas fa-stream" style="color:var(--info);"></i> Active Order Stream</h2>
+                <span class="badge" style="background: #eee; padding: 5px 12px; border-radius: 50px; font-size: 0.7rem; font-weight: 600;">{{ orders|length }} TOTAL ORDERS</span>
+            </div>
+
+            <div class="scroll-hint"><i class="fas fa-arrows-left-right"></i> Swipe left/right to see all columns</div>
+
+            <div class="table-container">
+                <table id="orderTable">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Masterpiece</th>
+                            <th>Patron Details</th>
+                            <th>Investment</th>
+                            <th>Workflow Status</th>
+                            <th>Payment Control</th>
+                            <th>Management</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in orders %}
+                        <tr class="order-row">
+                            <td>
+                                <span class="order-id">#HS-{{ order.id }}</span><br>
+                                <small style="color:#aaa; font-size: 0.7rem;">{{ order.date_ordered.strftime('%d %b, %y | %I:%M %p') }}</small>
+                            </td>
+                            <td>
+                                <div style="font-weight: 600; color: var(--dark); max-width: 200px;">{{ order.items }}</div>
+                                <button class="btn" style="border:none; background:none; color:var(--primary); font-size:0.75rem; padding:0; cursor:pointer; font-weight:600;"
+                                        onclick="showDetails('{{ order.custom_details|escape }}')">
+                                    View Customization <i class="fas fa-external-link-alt" style="font-size: 0.6rem;"></i>
+                                </button>
+                            </td>
+                            <td>
+                                <div style="line-height: 1.4; margin-bottom: 10px;">
+                                    <b style="font-size: 0.95rem;">{{ order.name }}</b><br>
+                                    <span style="font-size: 0.8rem; color: #666;"><i class="fas fa-phone-alt" style="font-size: 0.7rem;"></i> {{ order.phone }}</span>
+                                </div>
+
+                                <a href="{{ url_for('admin_user_detail', user_id=order.user_id) }}"
+                                style="text-decoration: none;
+                                        display: inline-flex;
+                                        align-items: center;
+                                        gap: 6px;
+                                        background: #f0f7ff;
+                                        color: #007bff;
+                                        padding: 5px 12px;
+                                        border-radius: 8px;
+                                        font-size: 0.7rem;
+                                        font-weight: 600;
+                                        transition: var(--transition);
+                                        border: 1px solid #d0e5ff;">
+                                    <i class="fas fa-user-circle"></i> View Profile
+                                </a>
+                            </td>
+                            <td><b style="color: #2c3e50; font-size: 1.1rem;">₹{{ order.total }}</b></td>
+                            <td>
+                                <select class="status-select" onchange="changeStatus('{{ order.id }}', this.value, this)">
+                                    <option value="pending" {% if order.status == 'pending' %}selected{% endif %}>🕒 Pending</option>
+                                    <option value="confirmed" {% if order.status == 'confirmed' %}selected{% endif %}>✅ Confirmed</option>
+                                    <option value="processing" {% if order.status == 'processing' %}selected{% endif %}>🎨 Crafting</option>
+                                    <option value="delivered" {% if order.status == 'delivered' %}selected{% endif %}>🎁 Delivered</option>
+                                </select>
+                            </td>
+                            <td>
+                                <button id="pay-btn-{{ order.id }}"
+                                        onclick="togglePayment('{{ order.id }}')"
+                                        class="payment-status {% if order.payment_confirmed %}status-paid{% else %}status-unpaid{% endif %}">
+                                    <i class="fas {% if order.payment_confirmed %}fa-check-double{% else %}fa-clock{% endif %}"></i>
+                                    <span>{% if order.payment_confirmed %}PAID{% else %}UNPAID{% endif %}</span>
+                                </button>
+                                <span id="status-badge-{{ order.id }}" style="display:none;">{{ order.status }}</span>
+                                <div style="font-size:0.6rem; color:#bbb; margin-top:6px; font-weight:500;">Affects User Invoice</div>
+                            </td>
+
+                            <td>
+                                <div class="action-tray">
+                                    <a href="/download_invoice/{{ order.id }}" class="icon-btn btn-view" title="Generate Invoice"><i class="fas fa-file-invoice-dollar"></i></a>
+                                    <button onclick="premiumConfirm('/delete_order/{{ order.id }}', 'Order #{{ order.id }}')" class="icon-btn btn-del" title="Cancel Order"><i class="fas fa-trash-alt"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="products-section" class="admin-card">
+            <div class="card-header">
+                <h2><i class="fas fa-paint-brush" style="color:var(--success);"></i> Add New Masterpiece</h2>
+            </div>
+            <form action="/add_product" method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="form-grid">
+                    <div class="input-group">
+                        <label>Artistic Name</label>
+                        <input type="text" name="name" placeholder="e.g. Midnight Poetry Letter" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Valuation (Price in ₹)</label>
+                        <input type="number" name="price" placeholder="999" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Select Collection</label>
+                        <select name="category_id" required>
+                            <option value="">-- Select Category --</option>
+                            {% for cat in categories %}
+                                <option value="{{ cat.id }}">{{ cat.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-grid-media">
+                    <div>
+                        <label class="file-label">Main Image (Required)</label>
+                        <input type="file" name="product_image" accept="image/*">
+                        <input type="text" name="manual_image_url" placeholder="Or Manual URL 1" style="margin-top:5px; font-size:11px;">
+                    </div>
+                    <div>
+                        <label class="file-label">Side View (Optional)</label>
+                        <input type="file" name="product_image2" accept="image/*">
+                        <input type="text" name="manual_image_url2" placeholder="Or Manual URL 2" style="margin-top:5px; font-size:11px;">
+                    </div>
+                    <div>
+                        <label class="file-label">Packaging (Optional)</label>
+                        <input type="file" name="product_image3" accept="image/*">
+                        <input type="text" name="manual_image_url3" placeholder="Or Manual URL 3" style="margin-top:5px; font-size:11px;">
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>The Story Behind This Piece</label>
+                    <textarea name="description" rows="4" placeholder="Describe the texture, feel, and emotion of this product..."></textarea>
+                </div>
+
+                <div style="text-align: right;">
+                    <button type="submit" class="btn-submit" style="width: auto; min-width: 250px;">
+                        <i class="fas fa-cloud-upload-alt"></i> List in Gallery
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div class="gallery-collections-grid">
+            <div class="admin-card">
+                <div class="card-header">
+                    <h2><i class="fas fa-boxes"></i> Current Gallery</h2>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Visual</th>
+                                <th>Name</th>
+                                <th>Collection</th>
+                                <th>Price</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for product in products %}
+                            <tr>
+                                <td>
+                                    {% if product.image_url.startswith('http') %}
+                                        <!-- External URL Strategy -->
+                                        <img src="{{ product.image_url }}" class="product-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                    {% else %}
+                                        <!-- Local Upload Strategy -->
+                                        <img src="{{ url_for('static', filename='uploads/' + product.image_url) }}" class="product-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                    {% endif %}
+
+                                    <!-- Clean, offline-safe CSS fallback placeholder -->
+                                    <div class="product-img-fallback" style="display:none; width:50px; height:50px; background:#f5f6fa; border-radius:8px; align-items:center; justify-content:center; color:#a0a5b5; font-size:1.2rem; border:1px dashed #dcdde1;">
+                                        <i class="fas fa-image"></i>
+                                    </div>
+                                </td>
+                                <td><b style="color:var(--dark);">{{ product.name }}</b></td>
+                                <td><span class="badge" style="background:#f0f0f0; padding:5px 10px; border-radius:8px; font-size:0.7rem;">{{ product.category_ref.name }}</span></td>
+                                <td><b style="color:var(--primary);">₹{{ product.price }}</b></td>
+                                <td>
+                                    <button onclick="premiumConfirm('/delete_product/{{ product.id }}', '{{ product.name }}', this)"
+                                            style="color:var(--danger); background:none; border:none; cursor:pointer; font-weight:700; font-size:0.8rem;">
+                                        <i class="fas fa-times-circle"></i> REMOVE
+                                    </button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="categories-section" class="admin-card">
+                <div class="card-header">
+                    <h2><i class="fas fa-tags"></i> Collections</h2>
+                </div>
+                <form action="/add_category" method="POST" style="margin-bottom: 30px;">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <div class="input-group">
+                        <input type="text" name="name" placeholder="New Category Name..." required style="margin-bottom: 15px;">
+                        <button type="submit" class="btn-submit" style="padding: 12px;"><i class="fas fa-plus"></i> Add</button>
+                    </div>
+                </form>
+                <div class="category-list">
+                    {% for cat in categories %}
+                        <div class="cat-pill animate__animated animate__fadeIn">
+                            <b>{{ cat.name }}</b>
+                            <a href="javascript:void(0)" onclick="premiumConfirm('/delete_category/{{ cat.id }}', '{{ cat.name }}')">
+                                <i class="fas fa-times"></i>
+                            </a>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // CSRF token for all AJAX POST requests below
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+        // 1. SEARCH FILTER LOGIC
+        function filterOrders() {
+            const input = document.getElementById('orderSearch');
+            const filter = input.value.toLowerCase();
+            const rows = document.querySelectorAll('.order-row');
+
+            rows.forEach(row => {
+                const text = row.innerText.toLowerCase();
+                row.style.display = text.includes(filter) ? "" : "none";
+            });
+        }
+
+        // 2. PAYMENT TOGGLE WITH DB SYNC
+        function togglePayment(orderId) {
+            const btn = document.getElementById(`pay-btn-${orderId}`);
+
+            // Safety check agar ID na mile
+            if (!btn) {
+                console.error("Button not found! Make sure ID is added to HTML.");
+                return;
+            }
+
+            btn.disabled = true;
+            btn.style.opacity = "0.5";
+
+            fetch(`/confirm_payment/${orderId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': csrfToken
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Premium classes toggle karein
+                    if (data.is_paid) {
+                        btn.className = 'payment-status status-paid';
+                        btn.innerHTML = '<i class="fas fa-check-double"></i> <span>PAID</span>';
+                    } else {
+                        btn.className = 'payment-status status-unpaid';
+                        btn.innerHTML = '<i class="fas fa-clock"></i> <span>UNPAID</span>';
+                    }
+
+                    // Workflow status (dropdown) ko bhi update karein agar backend se data aaya hai
+                    const row = btn.closest('tr');
+                    const statusSelect = row.querySelector('.status-select');
+                    if (statusSelect && data.status) {
+                        statusSelect.value = data.status;
+                    }
+
+                } else {
+                    Swal.fire({ icon: 'error', title: 'Oops...', text: data.message });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire({ icon: 'error', title: 'Error', text: 'Server response failed!' });
+            })
+            .finally(() => {
+                btn.disabled = false;
+                btn.style.opacity = "1";
+            });
+        }
+
+        // 3. WORKFLOW STATUS CHANGE WITH DB SYNC (FIXED EVENT BUG)
+        // 3. WORKFLOW STATUS CHANGE WITH DB SYNC (FIXED BODY DATA BUG)
+        function changeStatus(orderId, newStatus, element) {
+            const statusSelect = element || (window.event ? window.event.target : null);
+
+            if (statusSelect) {
+                statusSelect.style.opacity = "0.5";
+                statusSelect.disabled = true;
+            }
+
+            fetch(`/update_status/${orderId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': csrfToken
+                },
+                body: JSON.stringify({ status: newStatus }) // <-- Yeh line data bhejne ke liye zaroori hai
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Status Updated',
+                        text: `Order #HS-${orderId} is now ${newStatus}`,
+                        timer: 800,
+                        showConfirmButton: false
+                    }).then(() => {
+                        window.location.reload();
+                    });
+                } else {
+                    Swal.fire({ icon: 'error', title: 'Error', text: data.message })
+                    .then(() => { window.location.reload(); });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire({ icon: 'error', title: 'Error', text: 'Status update failed!' });
+                if (statusSelect) {
+                    statusSelect.style.opacity = "1";
+                    statusSelect.disabled = false;
+                }
+            });
+        }
+
+        // 4. CUSTOMIZATION VIEWER
+        function showDetails(text) {
+            Swal.fire({
+                title: '<span style="font-family:Playfair Display">Customization Details</span>',
+                html: `<div style="text-align:left; background:#fdfdfd; padding:25px; border-radius:15px; border:1px solid #eee; line-height:1.6; color:#555; max-height:400px; overflow-y:auto;">${text || 'No special notes provided by customer.'}</div>`,
+                confirmButtonText: 'Understood',
+                confirmButtonColor: '#ff416c',
+                showClass: { popup: 'animate__animated animate__zoomIn' },
+                hideClass: { popup: 'animate__animated animate__zoomOut' }
+            });
+        }
+
+        // 5. DELETE CONFIRMATION SYSTEM (FIXED 405 METHOD ERROR VIA FETCH POST)
+        function premiumConfirm(url, itemName, element) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: `You are about to remove "${itemName}". This action is permanent!`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#e74c3c',
+                cancelButtonColor: '#95a5a6',
+                confirmButtonText: 'Yes, Delete it!',
+                cancelButtonText: 'Keep it'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // SweetAlert Loading state dikhane ke liye
+                    Swal.fire({
+                        title: 'Deleting...',
+                        allowOutsideClick: false,
+                        didOpen: () => { Swal.showLoading(); }
+                    });
+
+                    // Backend ko POST request bhej rahe hain jo aapke Flask route se match karegi
+                    fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': csrfToken
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Deleted!',
+                                text: data.message || `"${itemName}" has been removed.`,
+                                timer: 1000,
+                                showConfirmButton: false
+                            }).then(() => {
+                                // Agar element pass kiya hai toh page bina reload kiye UI se row hatayein
+                                if (element) {
+                                    const row = element.closest('tr') || element.closest('.product-card');
+                                    if (row) { row.remove(); }
+                                } else {
+                                    // Fallback: Agar DOM context nahi mila toh safe side reload kar dein
+                                    window.location.reload();
+                                }
+                            });
+                        } else {
+                            Swal.fire({ icon: 'error', title: 'Failed', text: data.message });
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        Swal.fire({ icon: 'error', title: 'Error', text: 'Something went wrong on the server!' });
+                    });
+                }
+            });
+        }
+
+        // Auto-close Alerts after 5 seconds
+        setTimeout(() => {
+            const alerts = document.querySelectorAll('.animate__fadeInRight');
+            alerts.forEach(a => a.style.display = 'none');
+        }, 5000);
+    </script>
+</body>
+</html>

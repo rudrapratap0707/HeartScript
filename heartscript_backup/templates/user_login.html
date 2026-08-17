@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome Back | HeartScript</title>
+    
+    <!-- Google Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&family=Great+Vibes&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!-- Firebase SDKs (Compatibility Version) -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+
+    <style>
+        :root {
+            --primary: #ff416c;
+            --secondary: #ff4b2b;
+            --glass: rgba(255, 255, 255, 0.85);
+        }
+
+        body {
+            background: linear-gradient(135deg, #fff5f6 0%, #fdfcfb 100%);
+            font-family: 'Poppins', sans-serif;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        /* Animated Background Shapes */
+        .bg-shape {
+            position: absolute;
+            z-index: -1;
+            filter: blur(60px);
+            border-radius: 50%;
+            opacity: 0.4;
+            animation: float 8s infinite alternate;
+        }
+        .shape-1 { width: 350px; height: 350px; background: var(--primary); top: -120px; right: -100px; }
+        .shape-2 { width: 300px; height: 300px; background: var(--secondary); bottom: -80px; left: -100px; }
+
+        @keyframes float {
+            from { transform: translate(0, 0); }
+            to { transform: translate(20px, 40px); }
+        }
+
+        .login-container {
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            padding: 40px;
+            border-radius: 30px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.08);
+            max-width: 420px;
+            width: 92%;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            animation: slideUp 0.7s ease-out;
+            position: relative;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .brand-name {
+            font-family: 'Great Vibes', cursive;
+            font-size: 3.2rem;
+            color: var(--primary);
+            text-align: center;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .tagline {
+            text-align: center;
+            color: #777;
+            font-size: 0.95rem;
+            margin-bottom: 30px;
+        }
+
+        /* Social Login Buttons */
+        .social-login-btn {
+            background: white;
+            border: 1.5px solid #eee;
+            padding: 12px;
+            border-radius: 12px;
+            width: 100%;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: 0.3s;
+            margin-bottom: 20px;
+            cursor: pointer;
+        }
+
+        .social-login-btn:hover {
+            background: #fafafa;
+            border-color: #ddd;
+            transform: translateY(-2px);
+        }
+
+        .social-login-btn img { width: 20px; }
+
+        .divider {
+            text-align: center;
+            margin: 20px 0;
+            position: relative;
+            font-size: 0.75rem;
+            color: #bbb;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .divider::before, .divider::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            width: 35%;
+            height: 1px;
+            background: #eee;
+        }
+        .divider::before { left: 0; }
+        .divider::after { right: 0; }
+
+        /* Form Input Styling */
+        .input-group-text {
+            background: transparent;
+            border-right: none;
+            color: #ccc;
+            border-radius: 12px 0 0 12px;
+            padding-left: 15px;
+        }
+
+        .form-control {
+            border-radius: 12px;
+            padding: 12px 15px;
+            border: 1.5px solid #eee;
+            border-left: none;
+            font-size: 0.95rem;
+            background: rgba(255,255,255,0.5);
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: none;
+            background: white;
+        }
+
+        .input-group:focus-within .input-group-text {
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .input-group:focus-within .form-control {
+            border-color: var(--primary);
+        }
+
+        .forgot-pass-wrapper {
+            text-align: right;
+            margin-bottom: 20px;
+        }
+        
+        .forgot-pass-link {
+            font-size: 0.82rem;
+            color: #999;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+
+        .forgot-pass-link:hover { color: var(--primary); }
+
+        .btn-login {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            border: none;
+            padding: 14px;
+            border-radius: 12px;
+            width: 100%;
+            font-weight: 600;
+            color: white;
+            transition: 0.4s;
+            box-shadow: 0 10px 20px rgba(255, 65, 108, 0.2);
+        }
+
+        .btn-login:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 25px rgba(255, 65, 108, 0.3);
+            color: white;
+        }
+
+        .register-link {
+            text-align: center;
+            margin-top: 25px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .register-link a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        /* Floating Home Button */
+        .floating-home-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, #ff416c, #ff4b2b);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 50px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 10px 20px rgba(255, 65, 108, 0.3);
+            z-index: 1000;
+            transition: 0.3s;
+            font-weight: 600;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        @media (max-width: 500px) {
+            .login-container { padding: 30px 20px; }
+            .brand-name { font-size: 2.8rem; }
+            .floating-home-btn span { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="bg-shape shape-1"></div>
+<div class="bg-shape shape-2"></div>
+
+<div class="login-container">
+    <div class="brand-name">HeartScript</div>
+    <p class="tagline">Welcome back, Art Lover!</p>
+
+    <!-- Google OAuth Button -->
+    <button type="button" class="social-login-btn" id="googleLoginBtn" onclick="handleGoogleLogin()">
+        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
+        Continue with Google
+    </button>
+
+    <div class="divider">Or Email Login</div>
+
+    <!-- Flask Flash Alert Handler -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category if category != 'error' else 'danger' }} alert-dismissible fade show mb-3" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <!-- Standard Email Form -->
+    <form action="{{ url_for('user_login') }}" method="POST" id="loginForm">
+        
+        <!-- CSRF Protection -->
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+        <div class="mb-3">
+            <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                <input type="email" name="email" class="form-control" placeholder="Email Address" required>
+            </div>
+        </div>
+
+        <div class="mb-2">
+            <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                <input type="password" name="password" class="form-control" placeholder="Password" required>
+            </div>
+        </div>
+
+        <div class="forgot-pass-wrapper">
+            <a href="{{ url_for('forgot_password') }}" class="forgot-pass-link">Forgot Password?</a>
+        </div>
+
+        <button type="submit" class="btn-login" id="submitBtn">Sign In</button>
+    </form>
+
+    <div class="register-link">
+        New here? <a href="{{ url_for('register') }}">Create an account</a>
+    </div>
+</div>
+
+<!-- Floating Navigation Icon -->
+<a href="{{ url_for('home') }}" class="floating-home-btn">
+    <i class="fas fa-home"></i> <span>Home</span>
+</a>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    // ==========================================
+    // FIREBASE INITIALIZATION
+    // ==========================================
+    const firebaseConfig = {
+        apiKey: "AIzaSyBHpoAZUyg8ao-C-6viJCtPi6itsfTtys0",
+        authDomain: "heartscript25r.firebaseapp.com",
+        projectId: "heartscript25r",
+        appId: "1:345572532650:web:605ec4bdaf4fc746998bd3"
+    };
+    firebase.initializeApp(firebaseConfig);
+
+    // ==========================================
+    // GOOGLE AUTHENTICATION
+    // ==========================================
+    function handleGoogleLogin() {
+        const googleBtn = document.getElementById('googleLoginBtn');
+        const originalBtnText = googleBtn.innerHTML;
+        
+        googleBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Connecting...';
+        googleBtn.style.opacity = '0.8';
+        googleBtn.style.pointerEvents = 'none';
+
+        const provider = new firebase.auth.GoogleAuthProvider();
+        
+        firebase.auth().signInWithPopup(provider)
+        .then((result) => {
+            return result.user.getIdToken();
+        })
+        .then((idToken) => {
+            // Get CSRF token generated by Flask-WTF
+            const csrfToken = document.querySelector('input[name="csrf_token"]').value;
+
+            // Send Firebase token + CSRF token to Flask
+            return fetch('/api/firebase-login', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                },
+                body: JSON.stringify({ idToken: idToken })
+            });
+        })
+        .then(async (response) => {
+            const data = await response.json();
+            
+            if (data.status === 'success') {
+                window.location.href = data.redirect;
+            } else {
+                alert("Login Failed: " + (data.message || "Unknown error"));
+                resetGoogleBtn(googleBtn, originalBtnText);
+            }
+        })
+        .catch((error) => {
+            console.error("Google Login Error:", error);
+            alert("Google Sign-In failed. Please try again.");
+            resetGoogleBtn(googleBtn, originalBtnText);
+        });
+    }
+
+    // ==========================================
+    // RESET GOOGLE BUTTON
+    // ==========================================
+    function resetGoogleBtn(btn, text) {
+        btn.innerHTML = text;
+        btn.style.opacity = '1';
+        btn.style.pointerEvents = 'auto';
+    }
+
+    // ==========================================
+    // EMAIL LOGIN LOADING STATE
+    // ==========================================
+    document.getElementById('loginForm').addEventListener('submit', function () {
+        const btn = document.getElementById('submitBtn');
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Checking...';
+        btn.style.opacity = '0.8';
+        btn.style.pointerEvents = 'none';
+    });
+</script>
+
+</body>
+</html>
